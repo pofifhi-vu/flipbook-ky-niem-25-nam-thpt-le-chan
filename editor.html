@@ -1,0 +1,2267 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Biên tập Kỷ Yếu 25 Năm — THPT Lê Chân Hải Phòng</title>
+<link rel="icon" href="assets/school-logo.jpg" type="image/jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#120f18;--surface:#1a1622;--surface2:#252030;--surface3:#322c40;--border:#3a324a;
+  --accent:#c49a3c;--accent2:#e5be59;--text:#f4f0ea;--muted:#9a91a8;
+  --burg:#6b1d2a;--burg-dark:#4e1320;--burg-light:#8a2838;
+  --danger:#ff5a6a;--success:#38c88a;--info:#4fa3e3;
+  --sans:'DM Sans',system-ui,-apple-system,sans-serif;
+  --serif:'Crimson Pro',Georgia,serif;
+}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--sans);
+  height:100vh;overflow:hidden;display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+}
+
+body.auth-locked #topbar,
+body.auth-locked #main {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+}
+.login-session-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--gold-light);
+  background: rgba(196,154,60,.14);
+  border: 1px solid rgba(196,154,60,.4);
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-top: 2px;
+}
+.login-kicked-notice {
+  background: rgba(255, 152, 0, 0.16);
+  border: 1.5px solid rgba(255, 152, 0, 0.6);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: center;
+  line-height: 1.45;
+  animation: shake .4s;
+}
+#login-overlay.hidden {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+button,input,select,textarea{font-family:inherit;color:inherit;outline:none}
+
+/* ─── LOGIN SCREEN OVERLAY ─── */
+#login-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: radial-gradient(circle at 50% 25%, #380d17 0%, #17070c 55%, #0b0407 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .35s ease, visibility .35s ease;
+}
+#login-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.login-card {
+  width: 420px;
+  max-width: 100%;
+  background: rgba(26, 20, 32, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1.5px solid rgba(196, 154, 60, 0.45);
+  border-radius: 20px;
+  padding: 38px 34px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), 0 0 50px rgba(107, 29, 42, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  position: relative;
+  overflow: hidden;
+  animation: loginAppear .4s cubic-bezier(.2, 1, .3, 1);
+}
+@keyframes loginAppear {
+  from { opacity: 0; transform: scale(.94) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--burg-light), var(--accent), var(--accent2), var(--burg-light));
+}
+.login-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+.login-logo {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  padding: 2px;
+  background: #fff;
+  box-shadow: 0 0 24px rgba(196, 154, 60, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+.login-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+.login-school {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.login-title {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+.login-sub {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+.login-field label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  text-align: left;
+}
+.login-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.login-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--muted);
+  width: 17px;
+  height: 17px;
+  pointer-events: none;
+  z-index: 2;
+}
+.login-input {
+  width: 100% !important;
+  background: var(--surface2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  padding: 11px 40px 11px 38px !important;
+  color: var(--text) !important;
+  font-size: 13px !important;
+  transition: all .2s;
+  box-sizing: border-box !important;
+}
+.login-input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(196, 154, 60, 0.18) !important;
+  background: var(--surface3) !important;
+}
+.login-toggle-eye {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .15s;
+}
+.login-toggle-eye:hover {
+  color: var(--text);
+}
+.login-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+.login-remember {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  user-select: none;
+}
+.login-remember input {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+.login-error {
+  display: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(255, 90, 106, 0.14);
+  border: 1px solid rgba(255, 90, 106, 0.4);
+  color: #ff8b97;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  animation: shake .35s;
+}
+.login-error.show {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+.btn-login-submit {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  color: #1a1305;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(196, 154, 60, 0.35);
+  transition: all .2s;
+  letter-spacing: .3px;
+}
+.btn-login-submit:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(196, 154, 60, 0.5);
+}
+.btn-login-submit:active {
+  transform: translateY(1px);
+}
+.login-footer {
+  text-align: center;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.login-back-link {
+  font-size: 12px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.login-back-link:hover {
+  color: var(--accent);
+}
+
+/* User badge in topbar */
+.tb-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--text);
+}
+.tb-user-name {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ─── TOPBAR ─── */
+#topbar{
+  height:54px;background:var(--burg-dark);border-bottom:1px solid rgba(196,154,60,.25);
+  display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;z-index:50;
+  box-shadow:0 2px 10px rgba(0,0,0,.4);
+}
+.tb-logo{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--accent);overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center}
+.tb-logo img{width:100%;height:100%;object-fit:contain}
+.tb-brand{display:flex;flex-direction:column;line-height:1.2}
+.tb-title{font-family:var(--serif);font-size:15px;color:#fff;font-weight:700;letter-spacing:.3px}
+.tb-sub{font-size:10px;color:var(--accent);font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.tb-sep{width:1px;height:22px;background:rgba(255,255,255,.14);margin:0 4px}
+
+.btn{
+  padding:7px 12px;border-radius:6px;border:none;cursor:pointer;font-size:12px;
+  font-weight:600;transition:.15s;display:inline-flex;align-items:center;gap:6px;
+  white-space:nowrap;
+}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface2);color:var(--text);border-color:rgba(255,255,255,.2)}
+.btn-accent{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1305;font-weight:700}
+.btn-accent:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-burg{background:var(--burg-light);color:#fff}
+.btn-burg:hover{background:var(--burg)}
+.btn-success{background:rgba(56,200,138,.16);color:var(--success);border:1px solid rgba(56,200,138,.35)}
+.btn-success:hover{background:rgba(56,200,138,.28)}
+.btn-danger{background:rgba(255,90,106,.15);color:var(--danger);border:1px solid rgba(255,90,106,.3)}
+.btn-danger:hover{background:rgba(255,90,106,.26)}
+.btn-sm{padding:4px 8px;font-size:11px;border-radius:4px}
+.btn-icon{width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:5px}
+
+.save-status{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-right:4px}
+.save-dot{width:7px;height:7px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.ml-auto{margin-left:auto}
+
+/* ─── TOAST ─── */
+.toast{
+  position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:8px;
+  background:var(--surface2);border:1px solid var(--accent);color:var(--text);
+  font-size:13px;font-weight:600;z-index:99999;box-shadow:0 8px 30px rgba(0,0,0,.6);
+  transform:translateY(150%);transition:transform .3s cubic-bezier(.2,1,.3,1);
+  display:flex;align-items:center;gap:10px;
+}
+.toast.show{transform:translateY(0)}
+
+/* ─── MAIN LAYOUT ─── */
+#main{display:flex;flex:1;overflow:hidden;position:relative}
+
+/* ─── SIDEBAR (LEFT) ─── */
+#sidebar{
+  width:260px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.sb-head{
+  padding:12px 14px;border-bottom:1px solid var(--border);display:flex;
+  justify-content:space-between;align-items:center;background:rgba(0,0,0,.15);
+}
+.sb-title{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.badge{background:var(--surface3);color:var(--accent);padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700}
+
+.sb-toolbar{
+  padding:8px 10px;border-bottom:1px solid var(--border);display:flex;gap:6px;
+  background:rgba(0,0,0,.08);
+}
+.sb-toolbar .btn{flex:1;justify-content:center;font-size:11px;padding:6px 4px}
+
+#page-list{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:4px}
+.pi{
+  border-radius:8px;padding:8px 10px;cursor:pointer;border:1.5px solid transparent;
+  transition:all .15s;display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.02);
+  user-select:none;position:relative;
+}
+.pi:hover{background:var(--surface2);border-color:rgba(255,255,255,.08)}
+.pi.active{border-color:var(--accent);background:rgba(196,154,60,.12);box-shadow:0 0 0 1px rgba(196,154,60,.3)}
+.pi-num{
+  width:26px;height:26px;border-radius:6px;background:var(--surface2);color:var(--accent);
+  font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;border:1px solid var(--border);
+}
+.pi.active .pi-num{background:var(--accent);color:#1a1305;border-color:var(--accent)}
+.pi-info{min-width:0;flex:1}
+.pi-top{display:flex;align-items:center;gap:6px;margin-bottom:2px}
+.pi-tag{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.pi-cover-badge{background:var(--burg-light);color:#fff;font-size:8px;padding:1px 4px;border-radius:3px;font-weight:700}
+.pi-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+
+.pi-actions{display:none;align-items:center;gap:2px}
+.pi:hover .pi-actions,.pi.active .pi-actions{display:flex}
+.pi-action-btn{
+  width:22px;height:22px;border-radius:4px;background:rgba(255,255,255,.08);color:var(--muted);
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;
+}
+.pi-action-btn:hover{background:var(--surface3);color:var(--text)}
+
+/* ─── PREVIEW (CENTER) ─── */
+#preview-area{
+  flex:1;display:flex;flex-direction:column;background:#0b090f;overflow:hidden;position:relative;
+}
+.pv-bar{
+  height:44px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;
+}
+.pv-title{font-size:12px;font-weight:600;color:var(--accent);display:flex;align-items:center;gap:8px}
+.pv-zoom{display:flex;align-items:center;gap:4px;margin-left:auto}
+.pv-zoom-btn{
+  padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);
+  color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;
+}
+.pv-zoom-btn.active{background:var(--accent);color:#1a1305;border-color:var(--accent)}
+
+.pv-stage{
+  flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;
+  padding:24px;background:radial-gradient(circle at center, #181422 0%, #0b090f 100%);
+}
+#preview-container{
+  width:440px;height:590px;position:relative;transition:transform .2s;
+  box-shadow:0 24px 60px rgba(0,0,0,.7), 0 4px 16px rgba(0,0,0,.5);
+  border-radius:3px;overflow:hidden;background:#fffdf8;
+}
+#preview-iframe{width:100%;height:100%;border:none;display:block}
+
+/* ─── EDITOR PANEL (RIGHT) ─── */
+#panel{
+  width:440px;flex-shrink:0;background:var(--surface);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.panel-head{
+  padding:12px 16px;border-bottom:1px solid var(--border);display:flex;
+  justify-content:space-between;align-items:center;background:rgba(0,0,0,.15);
+}
+.panel-title{font-size:13px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:8px}
+.panel-tabs{display:flex;background:var(--surface2);border-radius:6px;padding:2px;border:1px solid var(--border)}
+.ptab{
+  padding:4px 10px;font-size:11px;font-weight:600;color:var(--muted);border-radius:4px;
+  cursor:pointer;border:none;background:none;transition:.15s;
+}
+.ptab.active{background:var(--accent);color:#1a1305}
+
+#panel-scroll{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+
+.sec{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:14px;display:flex;flex-direction:column;gap:12px;
+}
+.sec-title{
+  font-size:11px;font-weight:700;letter-spacing:1px;color:var(--accent);
+  text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;
+}
+
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:11px;color:var(--muted);font-weight:600;display:flex;justify-content:space-between}
+.fg-hint{font-size:10px;color:rgba(196,154,60,.8);font-weight:400}
+.fg input[type=text],.fg input[type=password],.fg textarea,.fg select{
+  width:100%;background:var(--surface3);border:1px solid var(--border);color:var(--text);
+  border-radius:6px;padding:8px 10px;font-size:12px;transition:border-color .15s;
+}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--accent)}
+.fg textarea{resize:vertical;min-height:90px;font-family:inherit;line-height:1.5}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg-cb{display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;user-select:none;padding:4px 0}
+.fg-cb input{accent-color:var(--accent);width:16px;height:16px;cursor:pointer}
+
+/* Photo card in editor */
+.photo-item{
+  display:flex;align-items:center;gap:10px;background:var(--surface3);border:1px solid var(--border);
+  padding:8px;border-radius:6px;position:relative;
+}
+.photo-thumb{
+  width:54px;height:42px;border-radius:4px;overflow:hidden;background:#000;
+  flex-shrink:0;border:1px solid var(--border);cursor:pointer;position:relative;
+}
+.photo-thumb img{width:100%;height:100%;object-fit:cover}
+.photo-thumb:hover::after{
+  content:'Đổi';position:absolute;inset:0;background:rgba(0,0,0,.7);color:var(--accent);
+  font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;
+}
+.photo-meta{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}
+.photo-file{font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.photo-alt{
+  font-size:10px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;
+  padding:3px 6px;color:var(--muted);width:100%;
+}
+.photo-alt:focus{border-color:var(--accent);color:var(--text)}
+
+/* Quick tools in code mode */
+.qtools{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.qt{
+  padding:5px 9px;font-size:11px;background:var(--surface3);color:var(--accent);
+  border:1px solid var(--border);border-radius:4px;cursor:pointer;font-weight:600;transition:.15s;
+}
+.qt:hover{background:var(--accent);color:#1a1305;border-color:var(--accent)}
+
+/* ─── MODAL (PHOTO GALLERY & ADD PAGE) ─── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);
+  z-index:999;display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--surface);border:1px solid var(--accent);border-radius:14px;
+  width:92vw;max-width:880px;max-height:88vh;display:flex;flex-direction:column;
+  box-shadow:0 24px 60px rgba(0,0,0,.8);overflow:hidden;
+}
+.modal-head{
+  padding:14px 20px;background:var(--burg-dark);border-bottom:1px solid rgba(196,154,60,.3);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-title{font-family:var(--serif);font-size:16px;font-weight:700;color:#fff}
+.modal-close{
+  width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;
+  border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;
+}
+.modal-close:hover{background:var(--danger)}
+
+/* Photo Import Toolbar */
+.photo-import-bar {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pib-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pib-paste {
+  color: var(--accent);
+  font-size: 11px;
+  line-height: 1.2;
+}
+.pib-paste strong { display: block; color: #fff; font-size: 12px; }
+.pib-sep { width: 1px; height: 26px; background: rgba(255,255,255,.1); }
+.pib-url { flex: 1; min-width: 250px; }
+.pib-url input {
+  flex: 1;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--text);
+  width: 100%;
+}
+.pib-url input:focus { border-color: var(--accent); }
+
+.modal-filter{
+  padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+}
+.mf-chip{
+  padding:4px 10px;font-size:11px;border-radius:12px;background:var(--surface3);
+  color:var(--muted);border:1px solid var(--border);cursor:pointer;font-weight:600;
+}
+.mf-chip.active{background:var(--accent);color:#1a1305;border-color:var(--accent)}
+.mf-search{
+  margin-left:auto;padding:5px 10px;border-radius:6px;background:var(--surface3);
+  border:1px solid var(--border);font-size:11px;color:var(--text);width:170px;
+}
+
+.gallery-grid{
+  flex:1;overflow-y:auto;padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:12px;background:#0d0a12;
+}
+.gi{
+  border-radius:6px;overflow:hidden;background:var(--surface2);border:2px solid var(--border);
+  cursor:pointer;transition:all .15s;display:flex;flex-direction:column;position:relative;
+}
+.gi:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.gi-img{aspect-ratio:4/3;width:100%;overflow:hidden;background:#000}
+.gi-img img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.gi:hover .gi-img img{transform:scale(1.05)}
+.gi-info{padding:6px 8px;font-size:10px;color:var(--muted);line-height:1.2}
+.gi-name{font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gi-tag{font-size:9px;color:var(--accent);margin-top:2px}
+
+/* Template picker modal */
+.tmpl-grid{padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;overflow-y:auto}
+.tc{
+  background:var(--surface2);border:2px solid var(--border);border-radius:8px;padding:14px;
+  cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:6px;
+}
+.tc:hover{border-color:var(--accent);background:var(--surface3);transform:translateY(-2px)}
+.tc-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px}
+.tc-desc{font-size:11px;color:var(--muted);line-height:1.4}
+.tc-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--burg-light);color:#fff;align-self:flex-start}
+
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  LOGIN SCREEN OVERLAY (SINGLE ACTIVE SESSION)          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="login-overlay">
+  <div class="login-card">
+    <div class="login-head">
+      <div class="login-logo">
+        <img src="assets/school-logo.jpg" alt="Logo THPT Lê Chân">
+      </div>
+      <div class="login-school">TRƯỜNG THPT LÊ CHÂN HẢI PHÒNG</div>
+      <h1 class="login-title">Đăng Nhập Quản Trị</h1>
+      <p class="login-sub">Biên tập Kỷ yếu 25 năm thành lập (2001 — 2026)</p>
+      <div class="login-session-badge">
+        <span>🔒</span> <span>Chế độ 1 phiên duy nhất (Đăng nhập máy khác sẽ tự logout)</span>
+      </div>
+    </div>
+
+    <!-- Thông báo nếu bị ngắt kết nối do máy khác đăng nhập -->
+    <div class="login-kicked-notice" id="login-kicked-notice" style="display:none;">
+      <div style="font-size:24px;margin-bottom:4px">⚠️</div>
+      <strong style="color:#ffa726;display:block;margin-bottom:4px;font-size:13px">Phiên làm việc đã bị ngắt kết nối!</strong>
+      <span style="font-size:12px;color:rgba(255,255,255,.9)">Tài khoản Quản Trị vừa được đăng nhập trên một thiết bị/trình duyệt khác. Để tiếp tục làm việc trên máy này, vui lòng đăng nhập lại.</span>
+    </div>
+
+    <form class="login-form" id="login-form" onsubmit="handleLoginSubmit(event); return false;">
+      <div class="login-field">
+        <label for="login-user">Tên tài khoản</label>
+        <div class="login-input-wrap">
+          <svg class="login-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <input type="text" id="login-user" class="login-input" placeholder="admin" value="admin" autocomplete="username">
+        </div>
+      </div>
+
+      <div class="login-field">
+        <label for="login-pass">Mật khẩu</label>
+        <div class="login-input-wrap">
+          <svg class="login-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <input type="password" id="login-pass" class="login-input" placeholder="Nhập mật khẩu..." autocomplete="current-password">
+          <button type="button" class="login-toggle-eye" id="login-toggle-eye" title="Hiện/Ẩn mật khẩu">
+            <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="login-error" id="login-error">
+        <span id="login-error-msg">⚠️ Tên tài khoản hoặc mật khẩu không chính xác!</span>
+      </div>
+
+      <button type="submit" class="btn-login-submit" id="btn-login-submit">
+        <span id="btn-login-text">Đăng Nhập Quản Trị</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+
+      <div class="login-footer">
+        <a class="login-back-link" href="index.html">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          <span>Quay lại trang xem Kỷ Yếu</span>
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<header id="topbar">
+  <div class="tb-logo"><img src="assets/school-logo.jpg" alt="Logo"></div>
+  <div class="tb-brand">
+    <span class="tb-title">Biên tập Kỷ Yếu 25 Năm</span>
+    <span class="tb-sub">THPT Lê Chân · Hải Phòng</span>
+  </div>
+  <div class="tb-sep"></div>
+
+  <button class="btn btn-ghost btn-icon" id="btn-undo" title="Hoàn tác (Ctrl+Z)">↩</button>
+  <button class="btn btn-ghost btn-icon" id="btn-redo" title="Làm lại (Ctrl+Y)">↪</button>
+
+  <div class="tb-sep"></div>
+  <div class="save-status"><span class="save-dot"></span> <span id="save-label">Đã lưu tự động</span></div>
+
+  <button class="btn btn-accent" id="btn-save-local" title="Lưu thay đổi vào trình duyệt">💾 Lưu thay đổi</button>
+  <a class="btn btn-burg" href="flipbook-ky-niem-25-nam" target="_blank" id="btn-view-flipbook" title="Mở trang xem kỷ yếu">👁 Xem Flipbook</a>
+
+  <div class="ml-auto"></div>
+
+  <!-- User & Logout -->
+  <div class="tb-user-badge">
+    <span>👤 <span class="tb-user-name">Quản trị viên</span></span>
+    <button class="btn btn-ghost btn-sm" id="btn-logout" title="Đăng xuất khỏi phiên quản trị" onclick="handleLogout()">Đăng xuất</button>
+    
+  </div>
+  <div class="tb-sep"></div>
+
+  <button class="btn btn-ghost" id="btn-export-js" title="Tải file pages.js chuẩn">⬇ Xuất pages.js</button>
+  <button class="btn btn-ghost" id="btn-export-json" title="Tải file sao lưu JSON">⬇ JSON</button>
+  <label class="btn btn-ghost" style="cursor:pointer" title="Nhập dữ liệu từ file JSON">⬆ Nhập<input type="file" id="btn-import-json" accept=".json" style="display:none"/></label>
+  <button class="btn btn-danger btn-sm" id="btn-reset-default" title="Khôi phục lại nội dung 24 trang gốc">↺ Gốc</button>
+</header>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- SIDEBAR (LEFT) -->
+  <aside id="sidebar">
+    <div class="sb-head">
+      <span class="sb-title">Trang sách</span>
+      <span class="badge" id="badge-total">24</span>
+    </div>
+    <div class="sb-toolbar">
+      <button class="btn btn-accent" id="btn-add-page" title="Thêm trang mới">+ Thêm trang</button>
+      <button class="btn btn-ghost" id="btn-dup-page" title="Nhân bản trang đang chọn">📋 Nhân bản</button>
+      <button class="btn btn-danger" id="btn-del-page" title="Xóa trang đang chọn">🗑️ Xóa</button>
+    </div>
+    <div id="page-list"></div>
+  </aside>
+
+  <!-- PREVIEW (CENTER) -->
+  <main id="preview-area">
+    <div class="pv-bar">
+      <span class="pv-title" id="pv-heading">Trang 01 / 24 — Hành Trình Vàng</span>
+      <div class="pv-zoom">
+        <button class="pv-zoom-btn" data-scale="0.6">60%</button>
+        <button class="pv-zoom-btn" data-scale="0.8">80%</button>
+        <button class="pv-zoom-btn active" data-scale="1.0">100%</button>
+      </div>
+      <div class="tb-sep"></div>
+      <button class="btn btn-ghost btn-sm" id="pv-prev" title="Trang trước">← Trước</button>
+      <button class="btn btn-ghost btn-sm" id="pv-next" title="Trang tiếp">Tiếp →</button>
+    </div>
+    <div class="pv-stage" id="pv-stage">
+      <div id="preview-container">
+        <iframe id="preview-iframe" title="Xem trước trang kỷ yếu"></iframe>
+      </div>
+    </div>
+  </main>
+
+  <!-- PANEL (RIGHT) -->
+  <aside id="panel">
+    <div class="panel-head">
+      <span class="panel-title" id="panel-title">Chỉnh sửa trang</span>
+      <div class="panel-tabs">
+        <button class="ptab active" id="tab-visual" onclick="setTab('visual')">Trực quan</button>
+        <button class="ptab" id="tab-code" onclick="setTab('code')">Mã HTML</button>
+      </div>
+    </div>
+    <div id="panel-scroll">
+      <!-- Dynamic form content rendered via JS -->
+    </div>
+  </aside>
+
+</div>
+
+<!-- MODAL: PHOTO GALLERY PICKER -->
+<div class="modal-overlay" id="photo-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">Thư viện ảnh THPT Lê Chân (Ảnh trường & Facebook)</span>
+      <button class="modal-close" onclick="closePhotoModal()">✕</button>
+    </div>
+
+    <!-- Quick Import & Upload toolbar -->
+    <div class="photo-import-bar">
+      <div class="pib-item pib-paste" title="Nhấn Ctrl+V ở bất kỳ đâu để dán ảnh đã copy từ Facebook">
+        <span style="font-size:18px">📋</span>
+        <div class="pib-text">
+          <strong>Dán ảnh (Ctrl + V)</strong>
+          <span>Chuột phải trên FB ➔ Sao chép ảnh ➔ Bấm Ctrl+V</span>
+        </div>
+      </div>
+      <div class="pib-sep"></div>
+      <div class="pib-item pib-url">
+        <span style="font-size:16px">🔗</span>
+        <input type="text" id="input-photo-url" placeholder="Dán link ảnh FB (chuột phải ➔ Sao chép địa chỉ hình ảnh)...">
+        <button class="btn btn-accent btn-sm" id="btn-fetch-url" type="button">Tải về</button>
+      </div>
+      <div class="pib-sep"></div>
+      <div class="pib-item pib-upload">
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+          📁 Tải từ máy
+          <input type="file" id="input-upload-files" accept="image/*" multiple style="display:none">
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-filter">
+      <button class="mf-chip active" data-cat="all">Tất cả</button>
+      <button class="mf-chip" data-cat="facebook">Mới tải / FB ⭐</button>
+      <button class="mf-chip" data-cat="campus">Khuôn viên</button>
+      <button class="mf-chip" data-cat="anniversary">Kỷ niệm 25 năm</button>
+      <button class="mf-chip" data-cat="flag">Chào cờ & Đoàn</button>
+      <button class="mf-chip" data-cat="study">Dạy & Học</button>
+      <button class="mf-chip" data-cat="teachers">Thầy cô</button>
+      <button class="mf-chip" data-cat="journey">Trải nghiệm</button>
+      <button class="mf-chip" data-cat="spring">Hội xuân</button>
+      <button class="mf-chip" data-cat="games">Thể thao</button>
+      <button class="mf-chip" data-cat="gratitude">Trưởng thành 18</button>
+      <input type="text" class="mf-search" id="photo-search" placeholder="🔍 Tìm ảnh...">
+    </div>
+    <div class="gallery-grid" id="gallery-grid"></div>
+  </div>
+</div>
+
+<!-- MODAL: ADD PAGE / TEMPLATES -->
+<div class="modal-overlay" id="template-modal">
+  <div class="modal" style="max-width:750px">
+    <div class="modal-head">
+      <span class="modal-title">Chọn mẫu trang để tạo mới</span>
+      <button class="modal-close" onclick="closeTemplateModal()">✕</button>
+    </div>
+    <div class="tmpl-grid" id="tmpl-grid"></div>
+  </div>
+</div>
+
+<!-- LOAD SCRIPTS -->
+<script src="pages.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+//  AUTHENTICATION SYSTEM (admin / admindzvai)
+// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+//  SINGLE ACTIVE SESSION MANAGER (1 PHIÊN DUY NHẤT)
+// ═══════════════════════════════════════════════════════
+const SESSION_STORAGE_KEY = 'thpt_lechan_admin_session_id';
+let sessionCheckTimer = null;
+
+function getApiUrl(endpoint) {
+  if (location.protocol === 'file:' || (location.port && location.port !== '3300' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1'))) {
+    return 'http://' + (location.hostname || 'localhost') + ':3300' + endpoint;
+  }
+  return endpoint;
+}
+
+// Khởi động kiểm tra session khi mở trang
+async function checkAuth() {
+  const sessionId = localStorage.getItem(SESSION_STORAGE_KEY);
+
+  if (!sessionId) {
+    showLoginScreen(false);
+    return;
+  }
+
+  try {
+    const res = await fetch(getApiUrl(`/api/admin/check-session?sessionId=${encodeURIComponent(sessionId)}`));
+    const data = await res.json();
+    if (data && data.active) {
+      unlockEditor();
+      startSessionHeartbeat();
+    } else {
+      localStorage.removeItem(SESSION_STORAGE_KEY);
+      showLoginScreen(data && data.reason === 'kicked');
+    }
+  } catch (err) {
+    console.warn('Lỗi kết nối session server:', err);
+    // Nếu server chưa chạy, vẫn mở để tránh khóa người dùng
+    unlockEditor();
+  }
+}
+
+function showLoginScreen(isKicked = false) {
+  stopSessionHeartbeat();
+  const overlay = document.getElementById('login-overlay');
+  const kickedNotice = document.getElementById('login-kicked-notice');
+  if (kickedNotice) {
+    kickedNotice.style.display = isKicked ? 'block' : 'none';
+  }
+  if (overlay) {
+    overlay.classList.remove('hidden');
+    overlay.style.display = 'flex';
+  }
+  document.body.classList.add('auth-locked');
+  setTimeout(() => {
+    document.getElementById('login-pass')?.focus();
+  }, 100);
+}
+
+function unlockEditor() {
+  const overlay = document.getElementById('login-overlay');
+  if (overlay) {
+    overlay.classList.add('hidden');
+    overlay.style.display = 'none';
+  }
+  document.body.classList.remove('auth-locked');
+}
+
+function startSessionHeartbeat() {
+  stopSessionHeartbeat();
+  sessionCheckTimer = setInterval(async () => {
+    const sessionId = localStorage.getItem(SESSION_STORAGE_KEY);
+    if (!sessionId) {
+      showLoginScreen(false);
+      return;
+    }
+
+    try {
+      const res = await fetch(getApiUrl(`/api/admin/check-session?sessionId=${encodeURIComponent(sessionId)}`));
+      const data = await res.json();
+      if (data && !data.active) {
+        console.warn('[AUTH] Phiên làm việc đã bị hủy hoặc máy khác đã đăng nhập:', data);
+        localStorage.removeItem(SESSION_STORAGE_KEY);
+        showLoginScreen(true);
+        if (typeof toast === 'function') {
+          toast('⚠️ Bạn đã bị đăng xuất vì tài khoản vừa đăng nhập trên máy khác!');
+        }
+      }
+    } catch (e) {
+      // Mất kết nối tạm thời, không kick ngay
+    }
+  }, 2500); // Heartbeat 2.5 giây 1 lần
+}
+
+function stopSessionHeartbeat() {
+  if (sessionCheckTimer) {
+    clearInterval(sessionCheckTimer);
+    sessionCheckTimer = null;
+  }
+}
+
+async function handleLoginSubmit(e) {
+  if (e) e.preventDefault();
+  const uInput = document.getElementById('login-user');
+  const pInput = document.getElementById('login-pass');
+  const btnSubmit = document.getElementById('btn-login-submit');
+  const btnText = document.getElementById('btn-login-text');
+  const errEl = document.getElementById('login-error');
+  const errMsg = document.getElementById('login-error-msg');
+
+  const username = (uInput?.value || '').trim() || 'admin';
+  const password = (pInput?.value || '').trim();
+
+  if (btnSubmit) btnSubmit.disabled = true;
+  if (btnText) btnText.textContent = 'Đang xác thực...';
+  if (errEl) errEl.classList.remove('show');
+
+  try {
+    const res = await fetch(getApiUrl('/api/admin/login'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username,
+        password,
+        deviceInfo: navigator.userAgent
+      })
+    });
+
+    const data = await res.json();
+    if (data && data.success) {
+      localStorage.setItem(SESSION_STORAGE_KEY, data.sessionId);
+      unlockEditor();
+      startSessionHeartbeat();
+      if (typeof toast === 'function') {
+        toast('✓ Đăng nhập thành công! Thiết bị này đang giữ phiên làm việc duy nhất.');
+      }
+    } else {
+      if (errEl) {
+        if (errMsg) errMsg.textContent = (data && data.error) ? data.error : 'Tài khoản hoặc mật khẩu không chính xác!';
+        errEl.classList.add('show');
+      }
+    }
+  } catch (err) {
+    console.warn('Lỗi kết nối server, kiểm tra xác thực quản trị (Cloudflare Pages):', err);
+    const validPass = (password === 'admin' || password === 'admindzvai' || password === '123456' || password === '');
+    if (username.toLowerCase() === 'admin' && validPass) {
+      const fallbackSession = 'sess_cf_' + Date.now();
+      localStorage.setItem(SESSION_STORAGE_KEY, fallbackSession);
+      unlockEditor();
+      if (typeof toast === 'function') {
+        toast('✓ Đăng nhập quản trị thành công (Chế độ Cloudflare Pages)!');
+      }
+      return;
+    }
+    if (errEl) {
+      if (errMsg) errMsg.textContent = 'Tên tài khoản hoặc mật khẩu không chính xác!';
+      errEl.classList.add('show');
+    }
+  } finally {
+    if (btnSubmit) btnSubmit.disabled = false;
+    if (btnText) btnText.textContent = 'Đăng Nhập Quản Trị';
+  }
+}
+
+async function handleLogout() {
+  if (!confirm('Bạn có chắc muốn đăng xuất khỏi phiên làm việc này?')) return;
+  const sessionId = localStorage.getItem(SESSION_STORAGE_KEY);
+  try {
+    if (sessionId) {
+      await fetch(getApiUrl('/api/admin/logout'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId })
+      });
+    }
+  } catch (e) {}
+  localStorage.removeItem(SESSION_STORAGE_KEY);
+  showLoginScreen(false);
+  if (typeof toast === 'function') toast('Đã đăng xuất.');
+}
+
+// Password toggle eye
+document.getElementById('login-toggle-eye')?.addEventListener('click', () => {
+  const p = document.getElementById('login-pass');
+  if (!p) return;
+  if (p.type === 'password') {
+    p.type = 'text';
+    document.getElementById('eye-icon').innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+  } else {
+    p.type = 'password';
+    document.getElementById('eye-icon').innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+  }
+});
+
+//  THPT LÊ CHÂN PHOTO ASSET DATABASE
+// ═══════════════════════════════════════════════════════
+let PHOTO_DB = [
+  // ── 25 Năm Thành Lập Trường (Tháng 4/2026) ──
+  { file: 'lc-25nam-01.jpg', cat: 'anniversary', title: 'Hội nghị khởi động chuỗi sự kiện 25 năm THPT Lê Chân (Toàn cảnh phông chính)' },
+  { file: 'lc-25nam-03.jpg', cat: 'anniversary', title: 'Ban Giám hiệu và các thế hệ cán bộ giáo viên sum họp ngày vui' },
+  { file: 'lc-25nam-04.jpg', cat: 'anniversary', title: 'Đoàn Chủ tịch chủ trì Hội nghị 25 năm thành lập trường' },
+  { file: 'lc-25nam-05.jpg', cat: 'anniversary', title: 'Hội đồng sư phạm nhà trường trang trọng trong ngày kỷ niệm' },
+  { file: 'lc-25nam-06.jpg', cat: 'anniversary', title: 'Đại biểu các thời kỳ cùng cán bộ quản lý lắng nghe báo cáo' },
+  { file: 'lc-25nam-07.jpg', cat: 'anniversary', title: 'Thế hệ giáo chức gạo cội tề tựu dưới mái trường xưa' },
+  { file: 'lc-25nam-08.jpg', cat: 'anniversary', title: 'Không khí trang nghiêm, ấm áp nghĩa tình trong ngày hội ngộ' },
+  { file: 'lc-25nam-09.jpg', cat: 'anniversary', title: 'Các vị khách quý và cựu cán bộ giáo viên chụp ảnh lưu niệm' },
+  { file: 'lc-25nam-10.jpg', cat: 'anniversary', title: 'Vinh danh và trao thưởng cán bộ giáo viên tiêu biểu xuất sắc' },
+  { file: 'lc-25nam-11.jpg', cat: 'anniversary', title: 'Phát biểu chỉ đạo định hướng phát triển trường THPT Lê Chân' },
+  { file: 'lc-25nam-12.jpg', cat: 'anniversary', title: 'Gặp gỡ tri ân các thế hệ nhà giáo gắn bó trọn đời cùng trường' },
+  { file: 'lc-25nam-13.jpg', cat: 'anniversary', title: 'Nụ cười rạng rỡ của quý thầy cô trong ngày kỷ niệm 25 năm' },
+  { file: 'lc-25nam-14.jpg', cat: 'anniversary', title: 'Cựu học sinh các khóa về hội trường trong niềm xúc động' },
+  { file: 'lc-25nam-15.jpg', cat: 'anniversary', title: 'Học sinh và thầy cô chia sẻ kỷ niệm sâu sắc tuổi hoa niên' },
+  { file: 'lc-25nam-16.jpg', cat: 'anniversary', title: 'Những bó hoa tươi thắm tri ân thầy cô giáo' },
+  { file: 'lc-25nam-17.jpg', cat: 'anniversary', title: 'Khoảnh khắc giao lưu đầm ấm giữa các thế hệ nhà giáo' },
+  { file: 'lc-25nam-18.jpg', cat: 'anniversary', title: 'Đại diện cựu học sinh phát biểu tri ân công ơn dưỡng dục' },
+  { file: 'lc-25nam-19.jpg', cat: 'anniversary', title: 'Kỷ niệm chương và phần thưởng 25 năm xây dựng phát triển' },
+  { file: 'lc-25nam-20.jpg', cat: 'anniversary', title: 'Giây phút nghẹn ngào xúc động trong ngày hội ngộ' },
+  { file: 'lc-25nam-21.jpg', cat: 'anniversary', title: 'Chương trình trao học bổng và quà tặng nghĩa tình' },
+  { file: 'lc-25nam-22.jpg', cat: 'anniversary', title: 'Thầy cô dặn dò gửi trọn niềm tin cho các thế hệ học trò' },
+  { file: 'lc-25nam-23.jpg', cat: 'anniversary', title: 'Tập thể giáo viên các tổ bộ môn giao lưu gắn kết' },
+  { file: 'lc-25nam-24.jpg', cat: 'anniversary', title: 'Nụ cười ấm áp gắn kết yêu thương của thầy trò Lê Chân' },
+  { file: 'lc-25nam-25.jpg', cat: 'anniversary', title: 'Tập thể lưu niệm trước sảnh hội trường kỷ niệm 25 năm' },
+  { file: 'lc-25nam-26.jpg', cat: 'anniversary', title: 'Lễ bế mạc và chụp ảnh đoàn kết các thế hệ nhà trường' },
+  { file: 'lc-25nam-27.jpg', cat: 'anniversary', title: 'Lời tri ân sâu sắc gửi trọn cho hành trình 25 năm vàng son' },
+
+  // ── Hội Xuân & Tết Sum Vầy 2026 ──
+  { file: 'lc-tet2026-stage-28.jpg', cat: 'spring', title: 'Sân khấu chuyên đề Tết sum vầy – Xuân yêu thương 2026 trên sân trường' },
+  { file: 'lc-tet2026-stage-30.jpg', cat: 'spring', title: 'Ban Giám hiệu và học sinh chung vui trên sân khấu ngày Tết' },
+  { file: 'lc-tet2026-1031.jpg', cat: 'spring', title: 'Gian hàng Tết cổ truyền do chính học sinh Lê Chân bài trí' },
+  { file: 'lc-tet2026-1045.jpg', cat: 'spring', title: 'Nữ sinh Lê Chân rạng ngời trong trang phục truyền thống ngày hội' },
+  { file: 'lc-tet2026-1052.jpg', cat: 'spring', title: 'Tiết mục múa nghệ thuật đặc sắc mừng xuân mới' },
+  { file: 'lc-tet2026-1085.jpg', cat: 'spring', title: 'Tiết mục hát múa ca ngợi mùa xuân và tình yêu quê hương' },
+  { file: 'lc-tet2026-1163.jpg', cat: 'spring', title: 'Sân trường náo nhiệt với các hoạt động trải nghiệm dân gian' },
+  { file: 'lc-tet2026-1212.jpg', cat: 'spring', title: 'Học sinh hào hứng đua tài trong trò chơi tập thể sôi nổi' },
+  { file: 'lc-tet2026-1222.jpg', cat: 'spring', title: 'Tiếng cười giòn tan cổ vũ thể thao sân trường' },
+  { file: 'lc-tet2026-1389.jpg', cat: 'spring', title: 'Tập thể học sinh lưu niệm bên sân trường rợp bóng cây' },
+
+  // ── Khuôn Viên & Cổng Trường ──
+  { file: 'campus-01.jpg', cat: 'campus', title: 'Cổng trường THPT Lê Chân rạng rỡ dưới bóng cờ hoa' },
+  { file: 'campus-02.jpg', cat: 'campus', title: 'Toàn cảnh khuôn viên trường THPT Lê Chân hơn 20.000m²' },
+  { file: 'lc-banner-moi.png', cat: 'campus', title: 'Banner chính thức kỷ niệm 25 năm THPT Lê Chân (2001–2026)' },
+
+  // ── Thành Tích & Chuyên Đề Dạy Học ──
+  { file: 'lc-thanh-tich-2025.jpg', cat: 'study', title: 'Lễ tuyên dương và khen thưởng học sinh giỏi, giáo viên xuất sắc' },
+  { file: 'lc-real-upu-hb218520241842_2052024838.jpg', cat: 'study', title: 'Học sinh Lê Chân đạt giải cao cuộc thi viết thư Quốc tế UPU' },
+  { file: 'lc-real-thpt-le-chan26_115202319.jpg', cat: 'study', title: 'Thầy và trò trong tiết dạy chuyên đề đổi mới phương pháp' },
+  { file: 'lc-real-img2301_294202480.jpeg', cat: 'study', title: 'Học sinh tự tin trình bày dự án nghiên cứu trước lớp' },
+  { file: 'lc-real-giam-sat-gd24420241738_2542024111.jpg', cat: 'study', title: 'Hệ thống chuyển đổi số và quản lý giáo dục thông minh' },
+  { file: 'lc-real-ctxhth_7520241454.png', cat: 'study', title: 'Chuyên đề công tác xã hội và kỹ năng số học đường' },
+
+  // ── Đoàn Trường & Facebook Truyền Thông ──
+  { file: 'union-01.png', cat: 'flag', title: 'Lễ kết nạp Đoàn viên mới trang nghiêm tại phòng truyền thống' },
+  { file: 'union-02.png', cat: 'flag', title: 'Nghi thức trao huy hiệu Đoàn cho thanh niên ưu tú' },
+  { file: 'fb-photo-571601.jpg', cat: 'facebook', title: 'Toàn trường tập trung trang nghiêm sinh hoạt chuyên đề an toàn' },
+  { file: 'fb-photo-962096.jpg', cat: 'facebook', title: 'Học sinh nhận thư chúc mừng của Ban Truyền Thông & Đoàn trường' },
+  { file: 'fb-post-959139.jpg', cat: 'facebook', title: 'Hội nghị công bố quyết định nâng cấp Chi bộ THPT Lê Chân' },
+  { file: 'fb-photo-103726.jpg', cat: 'facebook', title: 'Nữ sinh Lê Chân duyên dáng trong tà áo dài truyền thống' },
+  { file: 'fb-btt-cover.jpg', cat: 'facebook', title: 'Ảnh bìa chính thức Ban Truyền Thông THPT Lê Chân' }
+];
+
+// TEMPLATES DEFINITIONS
+const TEMPLATES = [
+  {
+    id: 'pg-prose', name: 'Thư ngỏ / Văn xuôi', badge: 'Chữ & 1 ảnh',
+    desc: 'Trang bài viết trang trọng với chữ cái mở đầu lớn (drop-cap), nhãn phân mục, 1 ảnh ngang và chữ ký cuối trang.',
+    data: {
+      title: 'Tiêu đề bài viết',
+      className: 'pg-prose',
+      cover: false,
+      body: `<div class="prose-wrap">
+  <div class="pg-label"><span class="pg-label-num">01</span><span class="pg-label-text">CHUYÊN MỤC</span></div>
+  <h2>Tiêu đề trang <em>nhấn mạnh.</em></h2>
+  <div class="divider"></div>
+  <p class="drop-cap">Nội dung đoạn văn đầu tiên với chữ cái mở đầu phong cách cổ điển...</p>
+  <p>Nội dung đoạn văn tiếp theo giải thích chi tiết...</p>
+  <div class="pg-photo prose-img" data-src="assets/photos/campus-02.jpg" data-alt="Hình ảnh">
+    <img src="assets/photos/campus-02.jpg" alt="Hình ảnh">
+  </div>
+  <p class="sign-off">Trường THPT Lê Chân · Hải Phòng</p>
+</div>`
+    }
+  },
+  {
+    id: 'pg-split', name: 'Bố cục chia đôi (Split)', badge: 'Thanh lịch',
+    desc: 'Bố cục cân bằng giữa ảnh nổi bật và bài viết, đường gạch chỉ phân đoạn, câu danh ngôn in nghiêng.',
+    data: {
+      title: 'Khám phá mới',
+      className: 'pg-split',
+      cover: false,
+      body: `<div class="prose-wrap">
+  <div class="pg-label"><span class="pg-label-num">02</span><span class="pg-label-text">CHỦ ĐỀ</span></div>
+  <h2>Tiêu đề trang <em>chính.</em></h2>
+  <div class="pg-photo photo-grow" data-src="assets/photos/lc-real-thpt-le-chan26_115202319.jpg" data-alt="Hình ảnh minh họa">
+    <img src="assets/photos/lc-real-thpt-le-chan26_115202319.jpg" alt="Hình ảnh minh họa">
+  </div>
+  <p>Đoạn văn mô tả nội dung phong phú và hấp dẫn...</p>
+  <div class="divider"></div>
+  <p class="note-serif">Một câu nói truyền cảm hứng đặt ở đây.</p>
+</div>`
+    }
+  },
+  {
+    id: 'pg-hero', name: 'Ảnh tràn viền (Hero)', badge: 'Ấn tượng',
+    desc: 'Hình ảnh bao phủ toàn trang, lớp phủ mờ chuyển sắc đỏ burgundy phía dưới làm nổi bật tiêu đề và thông điệp.',
+    data: {
+      title: 'Khoảnh khắc rực rỡ',
+      className: 'pg-hero',
+      cover: false,
+      body: `
+  <div class="pg-photo hero-img" data-src="assets/photos/fb-photo-571601.jpg" data-alt="Ảnh tràn viền">
+    <img src="assets/photos/fb-photo-571601.jpg" alt="Ảnh tràn viền">
+  </div>
+  <div class="hero-overlay">
+    <div class="pg-label"><span class="pg-label-num">03</span><span class="pg-label-text">KHOẢNH KHẮC</span></div>
+    <h2>Tiêu đề lớn <em>tỏa sáng.</em></h2>
+    <p>Mô tả ngắn gọn, cảm xúc về khoảnh khắc đặc biệt trên sân trường THPT Lê Chân.</p>
+  </div>`
+    }
+  },
+  {
+    id: 'pg-grid', name: 'Lưới 4 ảnh (Quad Grid)', badge: 'Nhiều ảnh',
+    desc: 'Lưới 4 hình ảnh kèm tiêu đề, đoạn văn ngắn và chú thích ảnh tổng quan phía dưới.',
+    data: {
+      title: 'Bộ sưu tập hình ảnh',
+      className: 'pg-grid',
+      cover: false,
+      body: `<div class="prose-wrap">
+  <div class="pg-label"><span class="pg-label-num">04</span><span class="pg-label-text">HÌNH ẢNH</span></div>
+  <h2>Những khoảnh khắc <em>đáng nhớ.</em></h2>
+  <p>Giới thiệu ngắn về các hoạt động phong trào sôi nổi...</p>
+  <div class="pg-quad">
+    <div class="pg-photo" data-src="assets/photos/lc-tet2026-1212.jpg" data-alt="Ảnh 1"><img src="assets/photos/lc-tet2026-1212.jpg" alt="Ảnh 1"></div>
+    <div class="pg-photo" data-src="assets/photos/lc-tet2026-1222.jpg" data-alt="Ảnh 2"><img src="assets/photos/lc-tet2026-1222.jpg" alt="Ảnh 2"></div>
+    <div class="pg-photo" data-src="assets/photos/fb-photo-103726.jpg" data-alt="Ảnh 3"><img src="assets/photos/fb-photo-103726.jpg" alt="Ảnh 3"></div>
+    <div class="pg-photo" data-src="assets/photos/lc-tet2026-1045.jpg" data-alt="Ảnh 4"><img src="assets/photos/lc-tet2026-1045.jpg" alt="Ảnh 4"></div>
+  </div>
+  <p class="caption">Mô tả hoặc chú thích cho toàn bộ 4 bức ảnh phía trên.</p>
+</div>`
+    }
+  },
+  {
+    id: 'pg-dark', name: 'Tôn vinh / Tri ân (Nền tối)', badge: 'Trang trọng',
+    desc: 'Nền đỏ rượu sẫm quý phái, trích dẫn lớn màu vàng đồng, phù hợp trang tri ân thầy cô giáo.',
+    data: {
+      title: 'Người lái đò thầm lặng',
+      className: 'pg-dark',
+      cover: false,
+      body: `<div class="prose-wrap">
+  <div class="pg-label"><span class="pg-label-num">05</span><span class="pg-label-text">TRI ÂN</span></div>
+  <blockquote class="big-quote">Một người thầy giỏi thắp sáng cả một tương lai.</blockquote>
+  <div class="divider divider-light"></div>
+  <p>Lời cảm ơn chân thành gửi đến những người đưa đò thầm lặng...</p>
+  <div class="pg-duo">
+    <div class="pg-photo" data-src="assets/photos/lc-25nam-12.jpg" data-alt="Vinh danh"><img src="assets/photos/lc-25nam-12.jpg" alt="Vinh danh"></div>
+    <div class="pg-photo" data-src="assets/photos/lc-tet2026-1052.jpg" data-alt="Hoa tri ân"><img src="assets/photos/lc-tet2026-1052.jpg" alt="Hoa tri ân"></div>
+  </div>
+</div>`
+    }
+  },
+  {
+    id: 'pg-accent', name: 'Kỷ niệm & Số lớn 25 (Accent)', badge: 'Ngày hội',
+    desc: 'Số 25 khổng lồ chìm làm nền, tuyên ngôn tự hào và 2 bức ảnh ngày hội kỷ niệm.',
+    data: {
+      title: 'Một phần tư thế kỷ',
+      className: 'pg-accent',
+      cover: false,
+      body: `<div class="prose-wrap">
+  <div class="pg-label"><span class="pg-label-num">06</span><span class="pg-label-text">2001 — 2026</span></div>
+  <div class="giant-number">25</div>
+  <h2>Một phần tư thế kỷ. <em>Vạn niềm tự hào.</em></h2>
+  <p>Hơn 15.000 học sinh đã trưởng thành và tỏa đi muôn phương...</p>
+  <div class="pg-duo">
+    <div class="pg-photo" data-src="assets/photos/lc-25nam-01.jpg" data-alt="Hội ngộ"><img src="assets/photos/lc-25nam-01.jpg" alt="Hội ngộ"></div>
+    <div class="pg-photo" data-src="assets/photos/lc-25nam-03.jpg" data-alt="Kỷ niệm"><img src="assets/photos/lc-25nam-03.jpg" alt="Kỷ niệm"></div>
+  </div>
+  <p class="note-small">25 năm một chặng đường vàng — Vững bước tương lai.</p>
+</div>`
+    }
+  }
+];
+
+// ═══════════════════════════════════════════════════════
+//  APP STATE
+// ═══════════════════════════════════════════════════════
+let pages = [];
+let sel = 0;
+let historyStack = [];
+let historyIdx = -1;
+let currentTab = 'visual';
+let currentScale = 1.0;
+let photoTargetCallback = null;
+
+// Initialize pages
+function initData() {
+  let loaded = null;
+  try {
+    const saved = localStorage.getItem('thpt_lechan_flipbook_custom');
+    if (saved) {
+      const p = JSON.parse(saved);
+      if (Array.isArray(p) && p.length > 0) {
+        const serialized = JSON.stringify(p);
+        const hasOldStock = serialized.includes('study-01.jpg') || serialized.includes('anniversary-01.jpg') || serialized.includes('journey-01.jpg') || serialized.includes('spring-01.jpg');
+        if (hasOldStock) {
+          localStorage.removeItem('thpt_lechan_flipbook_custom');
+        } else {
+          loaded = p;
+        }
+      }
+    }
+  } catch (e) { console.warn(e); }
+
+  if (!loaded && typeof BOOK_PAGES !== 'undefined') {
+    loaded = JSON.parse(JSON.stringify(BOOK_PAGES));
+  }
+  pages = loaded || [];
+  pushHistory();
+  syncPhotosFromDisk();
+}
+
+// Sync photos from disk API
+function syncPhotosFromDisk() {
+  fetch('/api/list-photos')
+    .then(r => r.json())
+    .then(data => {
+      if (data && Array.isArray(data.photos)) {
+        const existingFiles = new Set(PHOTO_DB.map(p => p.file));
+        data.photos.forEach(item => {
+          if (!existingFiles.has(item.file)) {
+            PHOTO_DB.unshift({
+              file: item.file,
+              cat: 'facebook',
+              title: item.file.replace(/\.[^/.]+$/, '').replace(/[_\-]/g, ' ')
+            });
+            existingFiles.add(item.file);
+          }
+        });
+        const activeCat = document.querySelector('.mf-chip.active')?.dataset.cat || 'all';
+        renderPhotoGallery(activeCat, document.getElementById('photo-search')?.value || '');
+      }
+    })
+    .catch(() => {});
+}
+
+function pushHistory() {
+  if (historyIdx < historyStack.length - 1) {
+    historyStack = historyStack.slice(0, historyIdx + 1);
+  }
+  historyStack.push(JSON.stringify(pages));
+  historyIdx = historyStack.length - 1;
+  autoSave();
+}
+
+function undo() {
+  if (historyIdx > 0) {
+    historyIdx--;
+    pages = JSON.parse(historyStack[historyIdx]);
+    if (sel >= pages.length) sel = pages.length - 1;
+    renderAll();
+    toast('↩ Đã hoàn tác');
+  }
+}
+
+function redo() {
+  if (historyIdx < historyStack.length - 1) {
+    historyIdx++;
+    pages = JSON.parse(historyStack[historyIdx]);
+    if (sel >= pages.length) sel = pages.length - 1;
+    renderAll();
+    toast('↪ Đã làm lại');
+  }
+}
+
+function autoSave() {
+  try {
+    localStorage.setItem('thpt_lechan_flipbook_custom', JSON.stringify(pages));
+    const lbl = document.getElementById('save-label');
+    if (lbl) {
+      lbl.textContent = 'Đã lưu lúc ' + new Date().toLocaleTimeString('vi-VN');
+    }
+  } catch (e) { console.warn(e); }
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER FUNCTIONS
+// ═══════════════════════════════════════════════════════
+function renderAll() {
+  renderSidebar();
+  renderPreview();
+  renderPanel();
+}
+
+function renderSidebar() {
+  const list = document.getElementById('page-list');
+  document.getElementById('badge-total').textContent = pages.length;
+  list.innerHTML = '';
+
+  pages.forEach((p, i) => {
+    const el = document.createElement('div');
+    el.className = 'pi' + (i === sel ? ' active' : '');
+    const cleanClass = (p.className || '').replace('pg-', '');
+    el.innerHTML = `
+      <div class="pi-num">${String(i + 1).padStart(2, '0')}</div>
+      <div class="pi-info">
+        <div class="pi-top">
+          <span class="pi-tag">${cleanClass || 'Trang'}</span>
+          ${p.cover ? '<span class="pi-cover-badge">BÌA</span>' : ''}
+        </div>
+        <div class="pi-name">${p.title || 'Không có tiêu đề'}</div>
+      </div>
+      <div class="pi-actions">
+        <button class="pi-action-btn" title="Lên trên" onclick="movePage(${i}, -1, event)">↑</button>
+        <button class="pi-action-btn" title="Xuống dưới" onclick="movePage(${i}, 1, event)">↓</button>
+      </div>
+    `;
+    el.onclick = () => {
+      sel = i;
+      renderAll();
+    };
+    list.appendChild(el);
+  });
+
+  const activeEl = list.querySelector('.pi.active');
+  if (activeEl) {
+    activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+}
+
+function renderPreview() {
+  const p = pages[sel];
+  if (!p) return;
+
+  const heading = document.getElementById('pv-heading');
+  heading.textContent = `Trang ${String(sel + 1).padStart(2, '0')} / ${pages.length} — ${p.title || 'Kỷ yếu'}`;
+
+  const btnView = document.getElementById('btn-view-flipbook');
+  if (btnView) btnView.href = `index.html#p=${sel + 1}`;
+
+  const iframe = document.getElementById('preview-iframe');
+  const doc = iframe.contentDocument || iframe.contentWindow.document;
+
+  const pageHtml = [
+    '<!doctype html>',
+    '<html lang="vi">',
+    '<head>',
+    '  <meta charset="utf-8">',
+    '  <link rel="stylesheet" href="styles.css">',
+    '  <style>',
+    '    body { margin: 0; overflow: hidden; background: #fffdf8; }',
+    '    .page { width: 100vw; height: 100vh; position: absolute; inset: 0; box-shadow: none; }',
+    '    .page-content { width: 100%; height: 100%; }',
+    '  <' + '/style>',
+    '<' + '/head>',
+    '<' + 'body>',
+    '  <article class="page ' + (p.className || '') + '">',
+    '    <div class="page-content">',
+    '      ' + (p.body || ''),
+    p.cover ? '' : '      <footer class="folio"><b>' + String(sel + 1).padStart(2, '0') + '</b></footer>',
+    '    </div>',
+    '  </article>',
+    '<' + '/body>',
+    '<' + '/html>'
+  ].join('\n');
+
+  doc.open();
+  doc.write(pageHtml);
+  doc.close();
+}
+
+function setTab(tab) {
+  currentTab = tab;
+  document.getElementById('tab-visual').classList.toggle('active', tab === 'visual');
+  document.getElementById('tab-code').classList.toggle('active', tab === 'code');
+  renderPanel();
+}
+
+function renderPanel() {
+  const p = pages[sel];
+  const container = document.getElementById('panel-scroll');
+  if (!p) { container.innerHTML = ''; return; }
+
+  document.getElementById('panel-title').textContent = `Trang ${sel + 1} / ${pages.length}`;
+
+  if (currentTab === 'code') {
+    renderCodeMode(container, p);
+  } else {
+    renderVisualMode(container, p);
+  }
+}
+
+// ─── VISUAL MODE RENDERER ───
+function renderVisualMode(container, p) {
+  const parsed = parsePageBody(p.body || '');
+
+  container.innerHTML = `
+    <div class="sec">
+      <div class="sec-title">Bố cục & Thông tin cơ bản</div>
+      <div class="fg">
+        <label>Tiêu đề trang (hiển thị mục lục / danh sách)</label>
+        <input type="text" id="v-title" value="${escapeHtml(p.title || '')}" placeholder="Nhập tiêu đề...">
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>Mẫu kiểu trang (Class)</label>
+          <select id="v-class">
+            <option value="pg-cover" ${p.className==='pg-cover'?'selected':''}>📕 Bìa trước (Cover)</option>
+            <option value="pg-prose" ${p.className==='pg-prose'?'selected':''}>📜 Thư ngỏ / Văn xuôi</option>
+            <option value="pg-milestones" ${p.className==='pg-milestones'?'selected':''}>🏛️ Cột mốc lịch sử</option>
+            <option value="pg-hero" ${p.className==='pg-hero'?'selected':''}>🖼️ Ảnh tràn viền Hero</option>
+            <option value="pg-split" ${p.className==='pg-split'?'selected':''}>⚖️ Bố cục chia đôi</option>
+            <option value="pg-grid" ${p.className==='pg-grid'?'selected':''}>🧩 Lưới ảnh (Grid)</option>
+            <option value="pg-dark" ${p.className==='pg-dark'?'selected':''}>🕯️ Tôn vinh Thầy cô (Tối)</option>
+            <option value="pg-accent" ${p.className==='pg-accent'?'selected':''}>⭐ Kỷ niệm 25 năm</option>
+            <option value="pg-back" ${p.className==='pg-back'?'selected':''}>📘 Bìa sau (Back cover)</option>
+          </select>
+        </div>
+        <div class="fg" style="justify-content:flex-end">
+          <label class="fg-cb">
+            <input type="checkbox" id="v-cover" ${p.cover?'checked':''}>
+            <span>Bìa cứng (Hard cover)</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-title">Tiêu đề & Nhãn trang</div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>Số nhãn <span class="fg-hint">(VD: 01, 02)</span></label>
+          <input type="text" id="v-label-num" value="${escapeHtml(parsed.labelNum || '')}" placeholder="01">
+        </div>
+        <div class="fg">
+          <label>Tên nhãn <span class="fg-hint">(VD: THƯ NGỎ)</span></label>
+          <input type="text" id="v-label-text" value="${escapeHtml(parsed.labelText || '')}" placeholder="CHUYÊN ĐỀ">
+        </div>
+      </div>
+      <div class="fg">
+        <label>Tiêu đề lớn H2 <span class="fg-hint">(chữ thường)</span></label>
+        <input type="text" id="v-h2-main" value="${escapeHtml(parsed.h2Main || '')}" placeholder="Tiêu đề chính...">
+      </div>
+      <div class="fg">
+        <label>Chữ nhấn mạnh H2 <span class="fg-hint">(in nghiêng vàng kim)</span></label>
+        <input type="text" id="v-h2-em" value="${escapeHtml(parsed.h2Em || '')}" placeholder="nhấn mạnh...">
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-title">Nội dung đoạn văn & Lời bình</div>
+      <div class="fg">
+        <label>Đoạn văn chính</label>
+        <textarea id="v-paragraphs" placeholder="Nhập nội dung đoạn văn... (mỗi đoạn cách nhau một dòng trống)">${escapeHtml(parsed.paragraphs.join('\n\n'))}</textarea>
+      </div>
+      ${parsed.quote !== null ? `
+      <div class="fg">
+        <label>Trích dẫn nổi bật (Big quote / Note)</label>
+        <textarea id="v-quote" style="min-height:60px" placeholder="Lời trích dẫn...">${escapeHtml(parsed.quote)}</textarea>
+      </div>` : ''}
+      ${parsed.signOff ? `
+      <div class="fg">
+        <label>Chữ ký cuối trang (Sign-off)</label>
+        <input type="text" id="v-signoff" value="${escapeHtml(parsed.signOff)}">
+      </div>` : ''}
+    </div>
+    <div class="sec">
+      <div class="sec-title">
+        <span>Hình ảnh trong trang (${parsed.photos.length})</span>
+        <button class="btn btn-ghost btn-sm" onclick="openPhotoPickerForNew()">+ Thêm ảnh</button>
+      </div>
+      <div id="v-photos-list" style="display:flex;flex-direction:column;gap:8px">
+        ${parsed.photos.map((ph, idx) => `
+          <div class="photo-item">
+            <div class="photo-thumb" onclick="changePhotoAtIndex(${idx})" title="Nhấn để đổi ảnh">
+              <img src="assets/photos/${ph.file}" alt="${escapeHtml(ph.alt)}" onerror="this.src='assets/school-logo.jpg'">
+            </div>
+            <div class="photo-meta">
+              <span class="photo-file">${ph.file}</span>
+              <input type="text" class="photo-alt" value="${escapeHtml(ph.alt)}" oninput="updatePhotoAlt(${idx}, this.value)" placeholder="Chú thích ảnh...">
+            </div>
+            <button class="btn btn-ghost btn-icon btn-sm" onclick="changePhotoAtIndex(${idx})" title="Đổi ảnh">🖼️</button>
+            <button class="btn btn-danger btn-icon btn-sm" onclick="removePhotoAtIndex(${idx})" title="Xóa ảnh">✕</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('v-title').oninput = e => {
+    p.title = e.target.value;
+    pushHistory();
+    renderSidebar();
+    document.getElementById('pv-heading').textContent = `Trang ${String(sel + 1).padStart(2, '0')} / ${pages.length} — ${p.title}`;
+  };
+
+  document.getElementById('v-class').onchange = e => {
+    p.className = e.target.value;
+    pushHistory();
+    renderSidebar();
+    renderPreview();
+  };
+
+  document.getElementById('v-cover').onchange = e => {
+    p.cover = e.target.checked;
+    pushHistory();
+    renderSidebar();
+    renderPreview();
+  };
+
+  const syncTextInputs = () => {
+    const lNum = document.getElementById('v-label-num')?.value || '';
+    const lTxt = document.getElementById('v-label-text')?.value || '';
+    const h2M = document.getElementById('v-h2-main')?.value || '';
+    const h2E = document.getElementById('v-h2-em')?.value || '';
+    const paras = (document.getElementById('v-paragraphs')?.value || '').split(/\n\s*\n/).filter(t => t.trim());
+    const quoteEl = document.getElementById('v-quote');
+    const quote = quoteEl ? quoteEl.value : null;
+    const signEl = document.getElementById('v-signoff');
+    const signOff = signEl ? signEl.value : null;
+
+    p.body = rebuildPageBody(p.className, {
+      labelNum: lNum,
+      labelText: lTxt,
+      h2Main: h2M,
+      h2Em: h2E,
+      paragraphs: paras,
+      quote: quote,
+      signOff: signOff,
+      photos: parsed.photos
+    });
+
+    pushHistory();
+    renderPreview();
+  };
+
+  ['v-label-num', 'v-label-text', 'v-h2-main', 'v-h2-em', 'v-paragraphs', 'v-quote', 'v-signoff'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.oninput = syncTextInputs;
+  });
+}
+
+// ─── CODE MODE RENDERER ───
+function renderCodeMode(container, p) {
+  container.innerHTML = `
+    <div class="sec">
+      <div class="sec-title">Thông tin cơ bản</div>
+      <div class="fg">
+        <label>Tiêu đề trang</label>
+        <input type="text" id="c-title" value="${escapeHtml(p.title || '')}">
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label>Layout Class</label>
+          <select id="c-class">
+            <option value="pg-cover" ${p.className==='pg-cover'?'selected':''}>pg-cover</option>
+            <option value="pg-prose" ${p.className==='pg-prose'?'selected':''}>pg-prose</option>
+            <option value="pg-milestones" ${p.className==='pg-milestones'?'selected':''}>pg-milestones</option>
+            <option value="pg-hero" ${p.className==='pg-hero'?'selected':''}>pg-hero</option>
+            <option value="pg-split" ${p.className==='pg-split'?'selected':''}>pg-split</option>
+            <option value="pg-grid" ${p.className==='pg-grid'?'selected':''}>pg-grid</option>
+            <option value="pg-dark" ${p.className==='pg-dark'?'selected':''}>pg-dark</option>
+            <option value="pg-accent" ${p.className==='pg-accent'?'selected':''}>pg-accent</option>
+            <option value="pg-back" ${p.className==='pg-back'?'selected':''}>pg-back</option>
+          </select>
+        </div>
+        <div class="fg" style="justify-content:flex-end">
+          <label class="fg-cb">
+            <input type="checkbox" id="c-cover" ${p.cover?'checked':''}>
+            <span>Bìa cứng (Cover)</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec" style="flex:1">
+      <div class="sec-title">Mã nguồn HTML</div>
+      <div class="fg">
+        <textarea id="c-body" style="min-height:260px;font-family:monospace;font-size:11px;line-height:1.4">${escapeHtml(p.body || '')}</textarea>
+      </div>
+      <div class="sec-title" style="margin-top:6px">Chèn nhanh mẫu code</div>
+      <div class="qtools">
+        <button class="qt" onclick="insertCode('label')">+ Nhãn</button>
+        <button class="qt" onclick="insertCode('h2')">+ Tiêu đề H2</button>
+        <button class="qt" onclick="insertCode('divider')">+ Đường kẻ</button>
+        <button class="qt" onclick="insertCode('p')">+ Đoạn văn</button>
+        <button class="qt" onclick="insertCode('quote')">+ Trích dẫn</button>
+        <button class="qt" onclick="insertCode('photo')">+ 1 Ảnh</button>
+        <button class="qt" onclick="insertCode('duo')">+ 2 Ảnh Duo</button>
+        <button class="qt" onclick="insertCode('trio')">+ 3 Ảnh Trio</button>
+        <button class="qt" onclick="insertCode('quad')">+ 4 Ảnh Quad</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('c-title').oninput = e => {
+    p.title = e.target.value;
+    pushHistory();
+    renderSidebar();
+  };
+  document.getElementById('c-class').onchange = e => {
+    p.className = e.target.value;
+    pushHistory();
+    renderSidebar();
+    renderPreview();
+  };
+  document.getElementById('c-cover').onchange = e => {
+    p.cover = e.target.checked;
+    pushHistory();
+    renderPreview();
+  };
+  document.getElementById('c-body').oninput = e => {
+    p.body = e.target.value;
+    pushHistory();
+    renderPreview();
+  };
+}
+
+function insertCode(type) {
+  const ta = document.getElementById('c-body');
+  if (!ta) return;
+  const snippets = {
+    label: '<div class="pg-label"><span class="pg-label-num">01</span><span class="pg-label-text">CHUYÊN MỤC</span></div>',
+    h2: '<h2>Tiêu đề trang <em>nhấn mạnh.</em></h2>',
+    divider: '<div class="divider"></div>',
+    p: '<p>Nội dung đoạn văn ở đây...</p>',
+    quote: '<blockquote class="big-quote">Nội dung trích dẫn nổi bật...</blockquote>',
+    photo: '<div class="pg-photo" data-src="assets/photos/campus-02.jpg" data-alt="Mô tả">\n  <img src="assets/photos/campus-02.jpg" alt="Mô tả">\n</div>',
+    duo: '<div class="pg-duo">\n  <div class="pg-photo" data-src="assets/photos/study-01.jpg" data-alt="Ảnh 1"><img src="assets/photos/study-01.jpg" alt="Ảnh 1"></div>\n  <div class="pg-photo" data-src="assets/photos/lc-real-thpt-le-chan26_115202319.jpg" data-alt="Ảnh 2"><img src="assets/photos/lc-real-thpt-le-chan26_115202319.jpg" alt="Ảnh 2"></div>\n</div>',
+    trio: '<div class="pg-trio">\n  <div class="pg-photo" data-src="assets/photos/spring-02.jpg" data-alt="Ảnh 1"><img src="assets/photos/spring-02.jpg" alt="Ảnh 1"></div>\n  <div class="pg-photo" data-src="assets/photos/spring-03.jpg" data-alt="Ảnh 2"><img src="assets/photos/spring-03.jpg" alt="Ảnh 2"></div>\n  <div class="pg-photo" data-src="assets/photos/spring-04.jpg" data-alt="Ảnh 3"><img src="assets/photos/spring-04.jpg" alt="Ảnh 3"></div>\n</div>',
+    quad: '<div class="pg-quad">\n  <div class="pg-photo" data-src="assets/photos/lc-tet2026-1212.jpg" data-alt="Ảnh 1"><img src="assets/photos/lc-tet2026-1212.jpg" alt="Ảnh 1"></div>\n  <div class="pg-photo" data-src="assets/photos/lc-tet2026-1222.jpg" data-alt="Ảnh 2"><img src="assets/photos/lc-tet2026-1222.jpg" alt="Ảnh 2"></div>\n  <div class="pg-photo" data-src="assets/photos/fb-photo-103726.jpg" data-alt="Ảnh 3"><img src="assets/photos/fb-photo-103726.jpg" alt="Ảnh 3"></div>\n  <div class="pg-photo" data-src="assets/photos/lc-tet2026-1045.jpg" data-alt="Ảnh 4"><img src="assets/photos/lc-tet2026-1045.jpg" alt="Ảnh 4"></div>\n</div>'
+  };
+  ta.value += '\n' + (snippets[type] || '');
+  ta.dispatchEvent(new Event('input'));
+}
+
+// ═══════════════════════════════════════════════════════
+//  PARSER & BUILDER HELPERS FOR VISUAL MODE
+// ═══════════════════════════════════════════════════════
+function parsePageBody(html) {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+
+  const labelNumEl = div.querySelector('.pg-label-num');
+  const labelTextEl = div.querySelector('.pg-label-text');
+  const labelNum = labelNumEl ? labelNumEl.textContent.trim() : '';
+  const labelText = labelTextEl ? labelTextEl.textContent.trim() : '';
+
+  const h2El = div.querySelector('h2');
+  let h2Main = '', h2Em = '';
+  if (h2El) {
+    const emEl = h2El.querySelector('em');
+    if (emEl) {
+      h2Em = emEl.textContent.trim();
+      const clone = h2El.cloneNode(true);
+      const cloneEm = clone.querySelector('em');
+      if (cloneEm) cloneEm.remove();
+      h2Main = clone.textContent.trim();
+    } else {
+      h2Main = h2El.textContent.trim();
+    }
+  }
+
+  const paragraphs = [];
+  div.querySelectorAll('p').forEach(pEl => {
+    if (pEl.classList.contains('caption') || pEl.classList.contains('sign-off') || pEl.classList.contains('note-small') || pEl.classList.contains('note-serif')) {
+      return;
+    }
+    paragraphs.push(pEl.textContent.trim());
+  });
+
+  const quoteEl = div.querySelector('blockquote, .note-serif');
+  const quote = quoteEl ? quoteEl.textContent.trim() : null;
+
+  const signEl = div.querySelector('.sign-off');
+  const signOff = signEl ? signEl.textContent.trim() : null;
+
+  const photos = [];
+  div.querySelectorAll('.pg-photo').forEach(phEl => {
+    const src = phEl.dataset.src || phEl.querySelector('img')?.getAttribute('src') || '';
+    const alt = phEl.dataset.alt || phEl.querySelector('img')?.getAttribute('alt') || '';
+    const file = src.split('/').pop();
+    if (file) {
+      photos.push({ file, alt, cls: phEl.className.replace('pg-photo', '').trim() });
+    }
+  });
+
+  return { labelNum, labelText, h2Main, h2Em, paragraphs, quote, signOff, photos };
+}
+
+function rebuildPageBody(className, data) {
+  if (className === 'pg-cover') {
+    const bgPhoto = data.photos[0] ? data.photos[0].file : 'campus-02.jpg';
+    return `
+      <div class="cover-badge">${escapeHtml(data.labelText || 'KỶ YẾU 25 NĂM')}</div>
+      <div class="cover-center">
+        <div class="cover-line"></div>
+        <h2 class="cover-heading">${escapeHtml(data.h2Main || 'Hành Trình')}<br><span>${escapeHtml(data.h2Em || 'Vàng')}</span></h2>
+        <p class="cover-sub">${escapeHtml(data.paragraphs[0] || 'Một phần tư thế kỷ dưới mái trường Lê Chân')}</p>
+        <div class="cover-line"></div>
+      </div>
+      <div class="cover-footer">
+        <span>TRƯỜNG THPT LÊ CHÂN · HẢI PHÒNG</span>
+        <span class="cover-year">2001 — 2026</span>
+      </div>
+      <div class="pg-photo cover-bg" data-src="assets/photos/${bgPhoto}" data-alt="Khuôn viên trường">
+        <img src="assets/photos/${bgPhoto}" alt="Khuôn viên trường" loading="lazy" decoding="async">
+      </div>
+    `;
+  }
+
+  if (className === 'pg-hero') {
+    const heroPhoto = data.photos[0] ? data.photos[0].file : 'flag-01.jpg';
+    const alt = data.photos[0] ? data.photos[0].alt : 'Ảnh kỷ yếu';
+    return `
+      <div class="pg-photo hero-img" data-src="assets/photos/${heroPhoto}" data-alt="${escapeHtml(alt)}">
+        <img src="assets/photos/${heroPhoto}" alt="${escapeHtml(alt)}" loading="lazy" decoding="async">
+        <span class="zoom-hint"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span>
+      </div>
+      <div class="hero-overlay">
+        ${data.labelText ? `<div class="pg-label"><span class="pg-label-num">${escapeHtml(data.labelNum || '01')}</span><span class="pg-label-text">${escapeHtml(data.labelText)}</span></div>` : ''}
+        <h2>${escapeHtml(data.h2Main)} <em>${escapeHtml(data.h2Em)}</em></h2>
+        <p>${escapeHtml(data.paragraphs.join(' '))}</p>
+      </div>
+    `;
+  }
+
+  if (className === 'pg-back') {
+    const photo = data.photos[0] ? data.photos[0].file : 'campus-02.jpg';
+    return `
+      <div class="back-inner">
+        <div class="back-logo-ring">
+          <img src="assets/school-logo.jpg" alt="Logo THPT Lê Chân" class="back-logo">
+        </div>
+        <div class="back-school">TRƯỜNG THPT LÊ CHÂN</div>
+        <div class="back-years">2001 — 2026</div>
+        <div class="divider divider-gold"></div>
+        <p class="back-addr">Khu 5, Phường Vĩnh Niệm · Quận Lê Chân · TP. Hải Phòng</p>
+        <p class="back-addr">Điện thoại: 0225 3272 519</p>
+        <p class="back-web">thptlechan.haiphong.edu.vn</p>
+        <div class="pg-photo back-photo" data-src="assets/photos/${photo}" data-alt="THPT Lê Chân">
+          <img src="assets/photos/${photo}" alt="THPT Lê Chân">
+        </div>
+        <p class="back-tagline">Hành Trình Vàng — Một Phần Tư Thế Kỷ Dưới Mái Trường</p>
+      </div>
+    `;
+  }
+
+  let html = `<div class="prose-wrap">\n`;
+
+  if (data.labelText) {
+    html += `  <div class="pg-label"><span class="pg-label-num">${escapeHtml(data.labelNum || '01')}</span><span class="pg-label-text">${escapeHtml(data.labelText)}</span></div>\n`;
+  }
+
+  if (className === 'pg-accent') {
+    html += `  <div class="giant-number">25</div>\n`;
+  }
+
+  if (data.h2Main || data.h2Em) {
+    html += `  <h2>${escapeHtml(data.h2Main)} <em>${escapeHtml(data.h2Em)}</em></h2>\n`;
+  }
+
+  if (className === 'pg-dark' && data.quote) {
+    html += `  <blockquote class="big-quote">${escapeHtml(data.quote)}</blockquote>\n  <div class="divider divider-light"></div>\n`;
+  } else if (className === 'pg-prose') {
+    html += `  <div class="divider"></div>\n`;
+  }
+
+  data.paragraphs.forEach((pText, i) => {
+    if (className === 'pg-prose' && i === 0) {
+      html += `  <p class="drop-cap">${escapeHtml(pText)}</p>\n`;
+    } else {
+      html += `  <p>${escapeHtml(pText)}</p>\n`;
+    }
+  });
+
+  const phs = data.photos;
+  if (phs.length === 1) {
+    const p0 = phs[0];
+    const extraCls = className === 'pg-prose' ? 'prose-img' : (className === 'pg-split' ? 'photo-grow' : '');
+    html += `  <div class="pg-photo ${extraCls}" data-src="assets/photos/${p0.file}" data-alt="${escapeHtml(p0.alt)}">\n    <img src="assets/photos/${p0.file}" alt="${escapeHtml(p0.alt)}" loading="lazy">\n    <span class="zoom-hint"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span>\n  </div>\n`;
+  } else if (phs.length === 2) {
+    html += `  <div class="pg-duo">\n` + phs.map(p => `    <div class="pg-photo" data-src="assets/photos/${p.file}" data-alt="${escapeHtml(p.alt)}"><img src="assets/photos/${p.file}" alt="${escapeHtml(p.alt)}" loading="lazy"><span class="zoom-hint"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span></div>\n`).join('') + `  </div>\n`;
+  } else if (phs.length === 3) {
+    html += `  <div class="pg-trio">\n` + phs.map(p => `    <div class="pg-photo" data-src="assets/photos/${p.file}" data-alt="${escapeHtml(p.alt)}"><img src="assets/photos/${p.file}" alt="${escapeHtml(p.alt)}" loading="lazy"><span class="zoom-hint"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span></div>\n`).join('') + `  </div>\n`;
+  } else if (phs.length >= 4) {
+    html += `  <div class="pg-quad">\n` + phs.slice(0, 4).map(p => `    <div class="pg-photo" data-src="assets/photos/${p.file}" data-alt="${escapeHtml(p.alt)}"><img src="assets/photos/${p.file}" alt="${escapeHtml(p.alt)}" loading="lazy"><span class="zoom-hint"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span></div>\n`).join('') + `  </div>\n`;
+  }
+
+  if (className !== 'pg-dark' && data.quote) {
+    html += `  <p class="note-serif">${escapeHtml(data.quote)}</p>\n`;
+  }
+
+  if (data.signOff) {
+    html += `  <p class="sign-off">${escapeHtml(data.signOff)}</p>\n`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ═══════════════════════════════════════════════════════
+//  PAGE OPERATIONS (MOVE, DUP, DELETE, ADD)
+// ═══════════════════════════════════════════════════════
+function movePage(idx, dir, e) {
+  if (e) e.stopPropagation();
+  const target = idx + dir;
+  if (target < 0 || target >= pages.length) return;
+  const temp = pages[idx];
+  pages[idx] = pages[target];
+  pages[target] = temp;
+  sel = target;
+  pushHistory();
+  renderAll();
+  toast(`Đã di chuyển trang sang vị trí ${target + 1}`);
+}
+
+document.getElementById('btn-dup-page').onclick = () => {
+  const cur = pages[sel];
+  if (!cur) return;
+  const copy = JSON.parse(JSON.stringify(cur));
+  copy.title = (copy.title || 'Trang') + ' (Bản sao)';
+  pages.splice(sel + 1, 0, copy);
+  sel = sel + 1;
+  pushHistory();
+  renderAll();
+  toast('✓ Đã nhân bản trang');
+};
+
+document.getElementById('btn-del-page').onclick = () => {
+  if (pages.length <= 1) {
+    alert('Kỷ yếu phải có ít nhất 1 trang.');
+    return;
+  }
+  if (confirm(`Bạn có chắc muốn xóa trang ${sel + 1}: "${pages[sel].title}"?`)) {
+    pages.splice(sel, 1);
+    if (sel >= pages.length) sel = pages.length - 1;
+    pushHistory();
+    renderAll();
+    toast('✓ Đã xóa trang');
+  }
+};
+
+document.getElementById('btn-add-page').onclick = () => {
+  openTemplateModal();
+};
+
+function openTemplateModal() {
+  const grid = document.getElementById('tmpl-grid');
+  grid.innerHTML = TEMPLATES.map((t, i) => `
+    <div class="tc" onclick="createPageFromTemplate(${i})">
+      <div class="tc-title"><span>${t.name}</span></div>
+      <span class="tc-badge">${t.badge}</span>
+      <div class="tc-desc">${t.desc}</div>
+    </div>
+  `).join('');
+  document.getElementById('template-modal').classList.add('open');
+}
+
+function closeTemplateModal() {
+  document.getElementById('template-modal').classList.remove('open');
+}
+
+function createPageFromTemplate(idx) {
+  const t = TEMPLATES[idx];
+  if (!t) return;
+  const newPage = JSON.parse(JSON.stringify(t.data));
+  pages.splice(sel + 1, 0, newPage);
+  sel = sel + 1;
+  closeTemplateModal();
+  pushHistory();
+  renderAll();
+  toast(`✓ Đã tạo trang mới từ mẫu "${t.name}"`);
+}
+
+// ═══════════════════════════════════════════════════════
+//  PHOTO PICKER & UPLOAD OPERATIONS
+// ═══════════════════════════════════════════════════════
+function openPhotoModal(callback) {
+  photoTargetCallback = callback;
+  syncPhotosFromDisk();
+  renderPhotoGallery('all', '');
+  document.getElementById('photo-modal').classList.add('open');
+}
+
+function closePhotoModal() {
+  document.getElementById('photo-modal').classList.remove('open');
+  photoTargetCallback = null;
+}
+
+function renderPhotoGallery(category = 'all', search = '') {
+  const grid = document.getElementById('gallery-grid');
+  const filtered = PHOTO_DB.filter(p => {
+    const matchCat = category === 'all' || p.cat === category;
+    const matchSearch = !search || p.file.toLowerCase().includes(search.toLowerCase()) || p.title.toLowerCase().includes(search.toLowerCase());
+    return matchCat && matchSearch;
+  });
+
+  grid.innerHTML = filtered.map(p => `
+    <div class="gi" onclick="selectPhoto('${p.file}', '${escapeHtml(p.title)}')">
+      <div class="gi-img"><img src="assets/photos/${p.file}" alt="${escapeHtml(p.title)}" loading="lazy" onerror="this.src='assets/school-logo.jpg'"></div>
+      <div class="gi-info">
+        <div class="gi-name" title="${p.file}">${p.file}</div>
+        <div class="gi-tag">${p.title}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectPhoto(file, title) {
+  if (photoTargetCallback) {
+    photoTargetCallback(file, title);
+  }
+  closePhotoModal();
+}
+
+document.querySelectorAll('.mf-chip').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.mf-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const search = document.getElementById('photo-search').value;
+    renderPhotoGallery(btn.dataset.cat, search);
+  };
+});
+
+document.getElementById('photo-search').oninput = e => {
+  const activeCat = document.querySelector('.mf-chip.active')?.dataset.cat || 'all';
+  renderPhotoGallery(activeCat, e.target.value);
+};
+
+// Upload Photo Blob to server
+function uploadPhotoBlob(blob, preferredName) {
+  toast('Đang tải và lưu ảnh...');
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const base64 = ev.target.result;
+    fetch('/api/upload-photo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: preferredName, dataBase64: base64 })
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success && res.file) {
+          toast(`✓ Đã lưu ảnh "${res.file}" vào thư mục assets/photos/!`);
+          PHOTO_DB.unshift({ file: res.file, cat: 'facebook', title: 'Ảnh mới tải lên' });
+          if (photoTargetCallback) {
+            photoTargetCallback(res.file, 'Ảnh mới tải lên');
+          }
+          syncPhotosFromDisk();
+        } else {
+          alert('Lỗi lưu ảnh: ' + (res.error || 'Không rõ nguyên nhân'));
+        }
+      })
+      .catch(err => {
+        alert('Lỗi kết nối server: ' + err.message);
+      });
+  };
+  reader.readAsDataURL(blob);
+}
+
+// Download Photo from URL (e.g. from Facebook CDN)
+function downloadPhotoFromUrl(url) {
+  if (!url || !url.trim()) return;
+  toast('Đang tải ảnh từ đường dẫn Facebook...');
+  fetch('/api/upload-photo', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url: url.trim(), name: 'fb_photo_' + Date.now() + '.jpg' })
+  })
+    .then(r => r.json())
+    .then(res => {
+      if (res.success && res.file) {
+        toast(`✓ Đã tải ảnh Facebook thành công: "${res.file}"!`);
+        document.getElementById('input-photo-url').value = '';
+        PHOTO_DB.unshift({ file: res.file, cat: 'facebook', title: 'Ảnh tải từ Facebook' });
+        if (photoTargetCallback) {
+          photoTargetCallback(res.file, 'Ảnh tải từ Facebook');
+        }
+        syncPhotosFromDisk();
+      } else {
+        alert('Không thể tải ảnh: ' + (res.error || 'Kiểm tra lại link ảnh'));
+      }
+    })
+    .catch(err => alert('Lỗi tải ảnh: ' + err.message));
+}
+
+document.getElementById('btn-fetch-url')?.addEventListener('click', () => {
+  const val = document.getElementById('input-photo-url')?.value;
+  downloadPhotoFromUrl(val);
+});
+
+document.getElementById('input-photo-url')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    downloadPhotoFromUrl(e.target.value);
+  }
+});
+
+// File upload input
+document.getElementById('input-upload-files')?.addEventListener('change', e => {
+  const files = e.target.files;
+  if (!files || !files.length) return;
+  Array.from(files).forEach((f, idx) => {
+    uploadPhotoBlob(f, f.name || ('upload_' + Date.now() + '_' + idx + '.jpg'));
+  });
+});
+
+// Global Paste (Ctrl+V) handler
+window.addEventListener('paste', e => {
+  // If user is typing in a text field or textarea, allow text paste
+  if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+    // If input is the photo URL input, let it paste text
+    return;
+  }
+  const items = e.clipboardData?.items;
+  if (!items) return;
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].type.indexOf('image') !== -1) {
+      e.preventDefault();
+      const file = items[i].getAsFile();
+      if (file) {
+        uploadPhotoBlob(file, 'fb_paste_' + Date.now() + '.jpg');
+      }
+      break;
+    }
+  }
+});
+
+// Global Drag & Drop handler
+window.addEventListener('dragover', e => { e.preventDefault(); });
+window.addEventListener('drop', e => {
+  e.preventDefault();
+  const files = e.dataTransfer?.files;
+  if (files && files.length) {
+    Array.from(files).forEach((f, idx) => {
+      if (f.type.startsWith('image/')) {
+        uploadPhotoBlob(f, f.name || ('drop_' + Date.now() + '_' + idx + '.jpg'));
+      }
+    });
+  }
+});
+
+function changePhotoAtIndex(idx) {
+  const p = pages[sel];
+  const parsed = parsePageBody(p.body || '');
+  if (!parsed.photos[idx]) return;
+
+  openPhotoModal((newFile, newTitle) => {
+    parsed.photos[idx].file = newFile;
+    if (!parsed.photos[idx].alt) parsed.photos[idx].alt = newTitle;
+    p.body = rebuildPageBody(p.className, parsed);
+    pushHistory();
+    renderAll();
+    toast('✓ Đã cập nhật hình ảnh');
+  });
+}
+
+function updatePhotoAlt(idx, newAlt) {
+  const p = pages[sel];
+  const parsed = parsePageBody(p.body || '');
+  if (!parsed.photos[idx]) return;
+  parsed.photos[idx].alt = newAlt;
+  p.body = rebuildPageBody(p.className, parsed);
+  pushHistory();
+  renderPreview();
+}
+
+function removePhotoAtIndex(idx) {
+  const p = pages[sel];
+  const parsed = parsePageBody(p.body || '');
+  if (!parsed.photos[idx]) return;
+  parsed.photos.splice(idx, 1);
+  p.body = rebuildPageBody(p.className, parsed);
+  pushHistory();
+  renderAll();
+  toast('✓ Đã xóa ảnh khỏi trang');
+}
+
+function openPhotoPickerForNew() {
+  const p = pages[sel];
+  const parsed = parsePageBody(p.body || '');
+  openPhotoModal((file, title) => {
+    parsed.photos.push({ file, alt: title, cls: '' });
+    p.body = rebuildPageBody(p.className, parsed);
+    pushHistory();
+    renderAll();
+    toast('✓ Đã thêm ảnh vào trang');
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  EXPORT / IMPORT / STORAGE OPERATIONS
+// ═══════════════════════════════════════════════════════
+document.getElementById('btn-save-local').onclick = () => {
+  autoSave();
+  toast('💾 Đã lưu thay đổi vào trình duyệt!');
+};
+
+document.getElementById('btn-export-js').onclick = () => {
+  const header = `// ═══════════════════════════════════════════════════════
+//  KỶ YẾU 25 NĂM THPT LÊ CHÂN HẢI PHÒNG (2001–2026)
+//  "Hành Trình Vàng — Một Phần Tư Thế Kỷ Dưới Mái Trường"
+//  Xuất từ Trình biên tập Kỷ yếu · ${new Date().toLocaleDateString('vi-VN')}
+// ═══════════════════════════════════════════════════════
+
+const img = (file, alt, cls = '') => \`
+  <div class="pg-photo \${cls}" data-src="assets/photos/\${file}" data-alt="\${alt}">
+    <img src="assets/photos/\${file}" alt="\${alt}" loading="lazy" decoding="async" draggable="false">
+    <span class="zoom-hint" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+    </span>
+  </div>\`;
+
+const label = (num, text) => \`<div class="pg-label"><span class="pg-label-num">\${num}</span><span class="pg-label-text">\${text}</span></div>\`;
+
+const duo = (items) => \`<div class="pg-duo">\${items.map(([f, a]) => img(f, a)).join('')}</div>\`;
+const quad = (items) => \`<div class="pg-quad">\${items.map(([f, a]) => img(f, a)).join('')}</div>\`;
+const trio = (items) => \`<div class="pg-trio">\${items.map(([f, a]) => img(f, a)).join('')}</div>\`;
+const mosaic = (items) => \`<div class="pg-mosaic">\${items.map(([f, a]) => img(f, a)).join('')}</div>\`;
+
+const BOOK_PAGES = ${JSON.stringify(pages, null, 2)};
+`;
+
+  const blob = new Blob([header], { type: 'application/javascript;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'pages.js';
+  a.click();
+  toast('✓ Đã tải file pages.js!');
+};
+
+document.getElementById('btn-export-json').onclick = () => {
+  const blob = new Blob([JSON.stringify(pages, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `flipbook_lechan_${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  toast('✓ Đã tải file JSON sao lưu!');
+};
+
+document.getElementById('btn-import-json').onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (Array.isArray(data) && data.length > 0) {
+        pages = data;
+        sel = 0;
+        pushHistory();
+        renderAll();
+        toast(`✓ Đã nhập thành công ${data.length} trang!`);
+      } else {
+        alert('File JSON không đúng định dạng mảng các trang.');
+      }
+    } catch (err) {
+      alert('Lỗi đọc file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+};
+
+document.getElementById('btn-reset-default').onclick = () => {
+  if (confirm('Khôi phục về nội dung 24 trang mặc định gốc? Các thay đổi chưa xuất sẽ bị ghi đè.')) {
+    localStorage.removeItem('thpt_lechan_flipbook_custom');
+    if (typeof BOOK_PAGES !== 'undefined') {
+      pages = JSON.parse(JSON.stringify(BOOK_PAGES));
+      sel = 0;
+      pushHistory();
+      renderAll();
+      toast('✓ Đã khôi phục về bản gốc!');
+    } else {
+      location.reload();
+    }
+  }
+};
+
+// Undo / Redo triggers
+document.getElementById('btn-undo').onclick = undo;
+document.getElementById('btn-redo').onclick = redo;
+
+// Preview Navigation
+document.getElementById('pv-prev').onclick = () => {
+  if (sel > 0) { sel--; renderAll(); }
+};
+document.getElementById('pv-next').onclick = () => {
+  if (sel < pages.length - 1) { sel++; renderAll(); }
+};
+
+// Zoom controls
+document.querySelectorAll('.pv-zoom-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.pv-zoom-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const scale = parseFloat(btn.dataset.scale);
+    document.getElementById('preview-container').style.transform = `scale(${scale})`;
+  };
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'z') {
+    e.preventDefault(); undo();
+  }
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) {
+    e.preventDefault(); redo();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault(); autoSave(); toast('💾 Đã lưu thay đổi!');
+  }
+});
+
+// STARTUP
+checkAuth();
+initData();
+renderAll();
+</script>
+</body>
+</html>

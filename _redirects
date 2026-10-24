@@ -1,0 +1,7 @@
+# Cloudflare Pages URL Rewrites for pofifhi.bond
+/flipbook-ky-niem-25-nam        /index.html     200
+/flipbook-ky-niem-25-nam/       /index.html     200
+/flipbook-ky-niem-25-nam/*      /:splat         200
+/flipbook-edit                  /editor.html    200
+/flipbook-edit/                 /editor.html    200
+/flipbook-edit/*                /:splat         200

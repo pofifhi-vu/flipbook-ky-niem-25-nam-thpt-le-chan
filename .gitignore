@@ -1,0 +1,10 @@
+# Session data & temporary logs
+.session_state.json
+*.log
+scratch/
+node_modules/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini

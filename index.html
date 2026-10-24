@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#4e1320">
+  <title>Hành Trình Vàng — Kỷ Yếu 25 Năm THPT Lê Chân Hải Phòng</title>
+  <meta name="description" content="Kỷ yếu 25 năm thành lập Trường THPT Lê Chân Hải Phòng (2001–2026). Hành Trình Vàng — Một phần tư thế kỷ dưới mái trường.">
+  <meta property="og:title" content="Hành Trình Vàng — THPT Lê Chân 2001–2026">
+  <meta property="og:description" content="Kỷ yếu kỷ niệm 25 năm thành lập Trường THPT Lê Chân Hải Phòng.">
+  <meta property="og:image" content="assets/photos/campus-02.jpg">
+  <link rel="icon" href="assets/school-logo.jpg" type="image/jpeg">
+  <link rel="stylesheet" href="styles.css">
+  <script src="assets/vendor/page-flip.browser.js" defer></script>
+  <script src="pages.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <a class="topbar-logo" href="./" title="Về trang bìa">
+      <img src="assets/school-logo.jpg" width="40" height="40" alt="Logo THPT Lê Chân">
+    </a>
+    <div class="topbar-title">
+      <h1>Trường THPT Lê Chân Hải Phòng</h1>
+      <div class="topbar-sub">Kỷ niệm 25 năm · 2001–2026</div>
+    </div>
+
+    <div class="topbar-sep"></div>
+
+    <button class="tb-btn" id="btn-toc" type="button" title="Mục lục (T)">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"/></svg>
+    </button>
+    <button class="tb-btn" id="btn-fullscreen" type="button" title="Toàn màn hình (F)">
+      <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+    </button>
+    <a class="tb-btn" href="flipbook-edit" title="Chỉnh sửa nội dung">
+      <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg>
+    </a>
+  </header>
+
+  <!-- PROGRESS -->
+  <div id="progress-bar"></div>
+
+  <!-- READER -->
+  <section class="reader" aria-label="Sách lật trang kỷ yếu">
+    <div class="book-stage" id="book-stage">
+      <div class="book-mount" id="book-mount">
+        <div id="book" aria-label="Kỷ yếu 24 trang"></div>
+      </div>
+      <p class="loading-note" id="loading-note" role="status">Đang mở kỷ yếu…</p>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav" aria-label="Điều hướng trang">
+      <button class="nav-btn" id="prev-page" type="button" aria-label="Trang trước" title="← Trang trước">
+        <svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <span class="page-info" id="page-number" role="status" aria-live="polite">
+        01 <span class="of">/ 24</span>
+      </span>
+      <button class="nav-btn" id="next-page" type="button" aria-label="Trang tiếp" title="Trang tiếp →">
+        <svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </nav>
+
+    <p id="reader-error" role="alert" hidden></p>
+    <noscript><p style="text-align:center;padding:40px">Hãy bật JavaScript để xem kỷ yếu lật trang.</p></noscript>
+  </section>
+
+  <!-- LIGHTBOX -->
+  <dialog id="lightbox" class="lightbox" aria-labelledby="lb-caption">
+    <button class="lightbox-close" data-close type="button" aria-label="Đóng">✕</button>
+    <figure>
+      <img id="lb-img" alt="">
+      <figcaption id="lb-caption"></figcaption>
+    </figure>
+  </dialog>
+
+  <!-- TABLE OF CONTENTS -->
+  <dialog id="toc-dialog" class="toc-dialog">
+    <div class="toc-head">
+      <h2>Mục Lục Kỷ Yếu</h2>
+      <button data-close type="button" aria-label="Đóng mục lục">✕</button>
+    </div>
+    <div class="toc-body">
+      <div class="toc-grid" id="toc-list"></div>
+    </div>
+  </dialog>
+
+  <div id="print-root" aria-hidden="true"></div>
+</body>
+</html>

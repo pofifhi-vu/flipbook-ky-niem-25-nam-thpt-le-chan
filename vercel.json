@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/flipbook-ky-niem-25-nam", "destination": "/index.html" },
+    { "source": "/flipbook-ky-niem-25-nam/(.*)", "destination": "/$1" },
+    { "source": "/flipbook-edit", "destination": "/editor.html" },
+    { "source": "/flipbook-edit/(.*)", "destination": "/$1" }
+  ]
+}
