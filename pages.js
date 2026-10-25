@@ -315,11 +315,14 @@ const BOOK_PAGES = [
     body: `<div class="prose-wrap">
       ${label('17', 'Đua tài')}
       <h2>Hết mình <em>với tuổi trẻ.</em></h2>
-      ${duo([
-        ['lc-tet2026-1212.jpg', 'Hội thi trò chơi dân gian sôi động và hào hứng giữa các lớp'],
-        ['lc-tet2026-1222.jpg', 'Những tràng pháo tay giòn giã cổ vũ tinh thần thi đấu đoàn kết']
+      <p>Sân trường bùng nổ nhiệt huyết trong các hội thi tài năng, trò chơi dân gian và phong trào đua tài sôi nổi của học sinh Lê Chân.</p>
+      ${quad([
+        ['lc-tet2026-1212.jpg', 'Hội thi viết thư pháp và trò chơi dân gian sôi nổi giữa các khối lớp'],
+        ['lc-tet2026-1222.jpg', 'Trao thưởng và tôn vinh tinh thần đồng đội xuất sắc trên sân khấu'],
+        ['lc-tet2026-1163.jpg', 'Sân trường náo nức với các hoạt động trải nghiệm văn hóa thể thao'],
+        ['lc-tet2026-1389.jpg', 'Tiếng reo hò cổ vũ cuồng nhiệt và nụ cười rạng rỡ của cả sân trường']
       ])}
-      <p class="note-serif">Chiến thắng đẹp nhất là tinh thần fair-play, tinh thần đồng đội và nụ cười rạng rỡ của cả sân trường.</p>
+      <p class="caption">Chiến thắng đẹp nhất là tinh thần fair-play, sự gắn kết đồng đội và những kỷ niệm rực rỡ tuổi học trò.</p>
     </div>`
   },
 

@@ -21,7 +21,8 @@ try {
     if (Array.isArray(parsed) && parsed.length > 0) {
       const serialized = JSON.stringify(parsed);
       const hasOldStock = serialized.includes('study-01.jpg') || serialized.includes('anniversary-01.jpg') || serialized.includes('journey-01.jpg') || serialized.includes('spring-01.jpg');
-      if (hasOldStock) {
+      const hasOldPage18 = serialized.includes('lc-tet2026-1212.jpg') && !serialized.includes('lc-tet2026-1389.jpg');
+      if (hasOldStock || hasOldPage18) {
         localStorage.removeItem('thpt_lechan_flipbook_custom');
       } else {
         pagesData = parsed;
