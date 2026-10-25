@@ -1089,7 +1089,6 @@ let PHOTO_DB = [
   { file: 'fb-photo-571601.jpg', cat: 'facebook', title: 'Toàn trường tập trung trang nghiêm sinh hoạt chuyên đề an toàn' },
   { file: 'fb-photo-962096.jpg', cat: 'facebook', title: 'Học sinh nhận thư chúc mừng của Ban Truyền Thông & Đoàn trường' },
   { file: 'fb-post-959139.jpg', cat: 'facebook', title: 'Hội nghị công bố quyết định nâng cấp Chi bộ THPT Lê Chân' },
-  { file: 'fb-photo-103726.jpg', cat: 'facebook', title: 'Nữ sinh Lê Chân duyên dáng trong tà áo dài truyền thống' },
   { file: 'fb-btt-cover.jpg', cat: 'facebook', title: 'Ảnh bìa chính thức Ban Truyền Thông THPT Lê Chân' }
 ];
 
@@ -1166,7 +1165,7 @@ const TEMPLATES = [
   <div class="pg-quad">
     <div class="pg-photo" data-src="assets/photos/lc-tet2026-1212.jpg" data-alt="Ảnh 1"><img src="assets/photos/lc-tet2026-1212.jpg" alt="Ảnh 1"></div>
     <div class="pg-photo" data-src="assets/photos/lc-tet2026-1222.jpg" data-alt="Ảnh 2"><img src="assets/photos/lc-tet2026-1222.jpg" alt="Ảnh 2"></div>
-    <div class="pg-photo" data-src="assets/photos/fb-photo-103726.jpg" data-alt="Ảnh 3"><img src="assets/photos/fb-photo-103726.jpg" alt="Ảnh 3"></div>
+    <div class="pg-photo" data-src="assets/photos/lc-tet2026-1052.jpg" data-alt="Ảnh 3"><img src="assets/photos/lc-tet2026-1052.jpg" alt="Ảnh 3"></div>
     <div class="pg-photo" data-src="assets/photos/lc-tet2026-1045.jpg" data-alt="Ảnh 4"><img src="assets/photos/lc-tet2026-1045.jpg" alt="Ảnh 4"></div>
   </div>
   <p class="caption">Mô tả hoặc chú thích cho toàn bộ 4 bức ảnh phía trên.</p>
@@ -1236,7 +1235,8 @@ function initData() {
         const serialized = JSON.stringify(p);
         const hasOldStock = serialized.includes('study-01.jpg') || serialized.includes('anniversary-01.jpg') || serialized.includes('journey-01.jpg') || serialized.includes('spring-01.jpg');
         const hasOldPage18 = serialized.includes('lc-tet2026-1212.jpg') && !serialized.includes('lc-tet2026-1389.jpg');
-        if (hasOldStock || hasOldPage18) {
+        const hasOldBanner = serialized.includes('fb-photo-103726.jpg');
+        if (hasOldStock || hasOldPage18 || hasOldBanner) {
           localStorage.removeItem('thpt_lechan_flipbook_custom');
         } else {
           loaded = p;
@@ -1666,7 +1666,7 @@ function insertCode(type) {
     photo: '<div class="pg-photo" data-src="assets/photos/campus-02.jpg" data-alt="Mô tả">\n  <img src="assets/photos/campus-02.jpg" alt="Mô tả">\n</div>',
     duo: '<div class="pg-duo">\n  <div class="pg-photo" data-src="assets/photos/study-01.jpg" data-alt="Ảnh 1"><img src="assets/photos/study-01.jpg" alt="Ảnh 1"></div>\n  <div class="pg-photo" data-src="assets/photos/lc-real-thpt-le-chan26_115202319.jpg" data-alt="Ảnh 2"><img src="assets/photos/lc-real-thpt-le-chan26_115202319.jpg" alt="Ảnh 2"></div>\n</div>',
     trio: '<div class="pg-trio">\n  <div class="pg-photo" data-src="assets/photos/spring-02.jpg" data-alt="Ảnh 1"><img src="assets/photos/spring-02.jpg" alt="Ảnh 1"></div>\n  <div class="pg-photo" data-src="assets/photos/spring-03.jpg" data-alt="Ảnh 2"><img src="assets/photos/spring-03.jpg" alt="Ảnh 2"></div>\n  <div class="pg-photo" data-src="assets/photos/spring-04.jpg" data-alt="Ảnh 3"><img src="assets/photos/spring-04.jpg" alt="Ảnh 3"></div>\n</div>',
-    quad: '<div class="pg-quad">\n  <div class="pg-photo" data-src="assets/photos/lc-tet2026-1212.jpg" data-alt="Ảnh 1"><img src="assets/photos/lc-tet2026-1212.jpg" alt="Ảnh 1"></div>\n  <div class="pg-photo" data-src="assets/photos/lc-tet2026-1222.jpg" data-alt="Ảnh 2"><img src="assets/photos/lc-tet2026-1222.jpg" alt="Ảnh 2"></div>\n  <div class="pg-photo" data-src="assets/photos/fb-photo-103726.jpg" data-alt="Ảnh 3"><img src="assets/photos/fb-photo-103726.jpg" alt="Ảnh 3"></div>\n  <div class="pg-photo" data-src="assets/photos/lc-tet2026-1045.jpg" data-alt="Ảnh 4"><img src="assets/photos/lc-tet2026-1045.jpg" alt="Ảnh 4"></div>\n</div>'
+    quad: '<div class="pg-quad">\n  <div class="pg-photo" data-src="assets/photos/lc-tet2026-1212.jpg" data-alt="Ảnh 1"><img src="assets/photos/lc-tet2026-1212.jpg" alt="Ảnh 1"></div>\n  <div class="pg-photo" data-src="assets/photos/lc-tet2026-1222.jpg" data-alt="Ảnh 2"><img src="assets/photos/lc-tet2026-1222.jpg" alt="Ảnh 2"></div>\n  <div class="pg-photo" data-src="assets/photos/lc-tet2026-1052.jpg" data-alt="Ảnh 3"><img src="assets/photos/lc-tet2026-1052.jpg" alt="Ảnh 3"></div>\n  <div class="pg-photo" data-src="assets/photos/lc-tet2026-1045.jpg" data-alt="Ảnh 4"><img src="assets/photos/lc-tet2026-1045.jpg" alt="Ảnh 4"></div>\n</div>'
   };
   ta.value += '\n' + (snippets[type] || '');
   ta.dispatchEvent(new Event('input'));

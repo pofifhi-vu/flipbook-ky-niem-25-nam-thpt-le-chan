@@ -256,7 +256,7 @@ const BOOK_PAGES = [
       ${quad([
         ['lc-tet2026-1212.jpg', 'Nụ cười rạng ngời của học sinh Lê Chân trong hoạt động tập thể'],
         ['lc-tet2026-1222.jpg', 'Tinh thần đồng đội gắn kết qua từng trò chơi dân gian'],
-        ['fb-photo-103726.jpg', 'Nét duyên dáng thanh xuân của nữ sinh Lê Chân'],
+        ['lc-tet2026-1052.jpg', 'Tiết mục múa nghệ thuật rực rỡ sắc xuân của các nữ sinh Lê Chân'],
         ['lc-tet2026-1045.jpg', 'Hào hứng khám phá không gian văn hóa học đường']
       ])}
       ${img('lc-tet2026-1389.jpg', 'Tập thể học sinh lưu niệm bên sân trường rực rỡ nắng vàng', 'photo-short')}
