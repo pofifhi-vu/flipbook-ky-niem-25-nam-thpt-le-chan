@@ -79,6 +79,15 @@ function sync() {
   // Hash
   history.replaceState(null, '', `#p=${cur + 1}`);
 
+  // Highlight active page in TOC
+  const tocEntries = document.querySelectorAll('#toc-list .toc-entry');
+  if (tocEntries.length) {
+    tocEntries.forEach(btn => {
+      const p = Number(btn.dataset.go);
+      btn.classList.toggle('active', p >= cur && p <= last);
+    });
+  }
+
   // Aria + preload
   bookEl.querySelectorAll('.page').forEach(page => {
     const idx = Number(page.dataset.idx);
@@ -250,7 +259,30 @@ if (tocList) {
 }
 btnToc?.addEventListener('click', () => tocDialog?.showModal());
 
-// ─── FULLSCREEN ───
+// ─── FULLSCREEN & FOCUS MODE ───
+let fsTimer = null;
+function resetFSTimer() {
+  document.body.classList.remove('focus-dimmed');
+  if (fsTimer) clearTimeout(fsTimer);
+  if (document.fullscreenElement) {
+    fsTimer = setTimeout(() => {
+      if (document.fullscreenElement && !document.querySelector('dialog[open]')) {
+        document.body.classList.add('focus-dimmed');
+      }
+    }, 3500);
+  }
+}
+document.addEventListener('mousemove', resetFSTimer);
+document.addEventListener('touchstart', resetFSTimer, { passive: true });
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) {
+    document.body.classList.remove('focus-dimmed');
+    if (fsTimer) clearTimeout(fsTimer);
+  } else {
+    resetFSTimer();
+  }
+});
+
 function toggleFS() {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(() => {});

@@ -10,13 +10,14 @@
   --bg: #f4f0ea;
   --paper: #fffdf8;
   --ink: #2c1a0e;
-  --muted: #7a695a;
+  --muted: #6e5e50;
   --burgundy: #6b1d2a;
   --burgundy-dark: #4e1320;
   --burgundy-light: #a13347;
   --gold: #c49a3c;
-  --gold-dark: #a17e2c;
+  --gold-dark: #8c6a1e;
   --gold-light: #e8c96e;
+  --gold-glow: rgba(196, 154, 60, 0.35);
   --warm-gray: #d8d0c4;
   --line: #cec3b2;
   --serif: 'Crimson Pro', Georgia, serif;
@@ -43,17 +44,21 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
 a { color: inherit; text-decoration: none; }
 [hidden] { display: none !important; }
 
-/* ─── TOP BAR (burgundy dark) ─── */
+/* ─── TOP BAR (Glassmorphism & Burgundy) ─── */
 .topbar {
   height: 58px;
-  background: var(--burgundy-dark);
+  background: rgba(78, 19, 32, 0.90);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
   display: flex;
   align-items: center;
   padding: 0 20px;
   gap: 14px;
   flex-shrink: 0;
   z-index: 100;
-  box-shadow: 0 2px 12px rgba(78,19,32,.35);
+  border-bottom: 1px solid rgba(196, 154, 60, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.16);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .topbar-logo {
@@ -138,10 +143,20 @@ a { color: inherit; text-decoration: none; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255,255,255,.7);
-  transition: all .15s;
+  color: rgba(255,255,255,.8);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.tb-btn:hover { background: rgba(255,255,255,.12); color: #fff; }
+.tb-btn:hover {
+  background: rgba(255,255,255,.16);
+  border-color: rgba(196, 154, 60, 0.45);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.tb-btn:active {
+  transform: translateY(0);
+}
 .tb-btn svg {
   width: 18px;
   height: 18px;
@@ -204,34 +219,44 @@ a { color: inherit; text-decoration: none; }
   color: var(--muted);
 }
 
-/* ─── BOTTOM NAV ─── */
+/* ─── BOTTOM NAV (Glassmorphic) ─── */
 .bottom-nav {
-  height: 50px;
-  background: var(--bg);
-  border-top: 1px solid var(--line);
+  height: 54px;
+  background: rgba(244, 240, 234, 0.88);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border-top: 1px solid rgba(206, 195, 178, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
   flex-shrink: 0;
   padding: 0 16px;
+  box-shadow: 0 -4px 16px rgba(44, 26, 14, 0.05);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .nav-btn {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--burgundy);
-  background: rgba(107,29,42,.06);
-  transition: all .15s;
+  background: rgba(107, 29, 42, 0.08);
+  border: 1px solid rgba(107, 29, 42, 0.12);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .nav-btn:hover:not(:disabled) {
   background: var(--burgundy);
   color: #fff;
-  transform: scale(1.08);
+  border-color: var(--burgundy);
+  transform: scale(1.06) translateY(-1px);
+  box-shadow: 0 4px 14px rgba(107, 29, 42, 0.28);
+}
+.nav-btn:active:not(:disabled) {
+  transform: scale(0.98);
 }
 .nav-btn svg {
   width: 22px;
@@ -262,12 +287,31 @@ a { color: inherit; text-decoration: none; }
   background: var(--paper);
   overflow: hidden;
   box-shadow: 0 10px 32px rgba(44,26,14,.18);
+  transition: box-shadow 0.3s ease;
 }
 .page.--left {
   box-shadow: -8px 10px 32px rgba(44,26,14,.18), inset -12px 0 22px -16px rgba(44,26,14,.3);
 }
 .page.--right {
   box-shadow: 8px 10px 32px rgba(44,26,14,.18), inset 12px 0 22px -16px rgba(44,26,14,.3);
+}
+.page.--left .page-content::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 24px;
+  background: linear-gradient(to left, rgba(44, 26, 14, 0.08), transparent);
+  pointer-events: none;
+  z-index: 10;
+}
+.page.--right .page-content::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 24px;
+  background: linear-gradient(to right, rgba(44, 26, 14, 0.08), transparent);
+  pointer-events: none;
+  z-index: 10;
 }
 .page.--blank {
   background: var(--bg, #f4efe6) !important;
@@ -761,77 +805,133 @@ a { color: inherit; text-decoration: none; }
   color: rgba(255,255,255,.35);
 }
 
-/* ─── TOC DIALOG ─── */
+/* ─── TOC DIALOG (Glassmorphic Modal) ─── */
 .toc-dialog {
-  border: 0;
-  border-radius: 12px;
+  border: 1px solid rgba(196, 154, 60, 0.35);
+  border-radius: 16px;
   background: var(--paper);
-  width: 88vw;
-  max-width: 700px;
-  max-height: 82vh;
+  width: 90vw;
+  max-width: 720px;
+  max-height: 84vh;
   padding: 0;
   overflow: hidden;
-  box-shadow: 0 24px 60px rgba(44,26,14,.4);
+  box-shadow: 0 28px 70px rgba(44, 26, 14, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  animation: tocPop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.toc-dialog::backdrop { background: rgba(44,26,14,.6); backdrop-filter: blur(5px); }
+@keyframes tocPop {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.toc-dialog::backdrop {
+  background: rgba(44, 26, 14, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
 .toc-head {
   padding: 18px 24px;
-  background: var(--burgundy-dark);
+  background: linear-gradient(135deg, var(--burgundy-dark), #380d17);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid rgba(196, 154, 60, 0.25);
 }
 .toc-head h2 {
   margin: 0;
   font-family: var(--serif);
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 600;
   color: #fff !important;
+  letter-spacing: 0.5px;
 }
-.toc-head button { color: rgba(255,255,255,.6); }
-.toc-head button:hover { color: #fff; }
+.toc-head button {
+  color: rgba(255, 255, 255, 0.7);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  transition: all 0.15s ease;
+}
+.toc-head button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
 .toc-body {
-  padding: 16px 20px;
+  padding: 20px 24px;
   overflow-y: auto;
-  max-height: calc(82vh - 60px);
+  max-height: calc(84vh - 65px);
 }
 .toc-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
 }
 .toc-entry {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  background: rgba(107,29,42,.04);
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(206, 195, 178, 0.55);
+  background: rgba(255, 255, 255, 0.7);
   text-align: left;
-  transition: all .15s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .toc-entry:hover {
-  border-color: var(--burgundy-light);
-  background: rgba(107,29,42,.1);
+  border-color: var(--gold);
+  background: rgba(196, 154, 60, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(44, 26, 14, 0.08);
+}
+.toc-entry.active {
+  border-color: var(--burgundy);
+  background: rgba(107, 29, 42, 0.08);
+  box-shadow: 0 0 0 1px var(--burgundy) inset;
 }
 .toc-entry-num {
   font-family: var(--serif);
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--burgundy);
-  width: 26px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(107, 29, 42, 0.08);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
+.toc-entry.active .toc-entry-num {
+  background: var(--burgundy);
+  color: #fff;
+}
 .toc-entry-name {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 500;
   color: var(--ink);
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ─── FULLSCREEN FOCUS MODE (Apple HIG / Immersive Reader) ─── */
+body.focus-dimmed .topbar {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+body.focus-dimmed .bottom-nav {
+  opacity: 0;
+  transform: translateY(100%);
+  pointer-events: none;
+}
+body.focus-dimmed #progress-bar {
+  opacity: 0;
 }
 
 /* ─── PHOTO DIALOG ─── */
