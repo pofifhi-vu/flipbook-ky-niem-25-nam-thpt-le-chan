@@ -3,6 +3,8 @@
 *.log
 scratch/
 node_modules/
+assets/photos_backup/
+optimize_images_sharp.js
 
 # OS metadata
 .DS_Store

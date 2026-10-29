@@ -11,6 +11,40 @@ if (!fs.existsSync(PHOTOS_DIR)) {
   fs.mkdirSync(PHOTOS_DIR, { recursive: true });
 }
 
+let sharp = null;
+try {
+  sharp = require('sharp');
+} catch (e) {
+  sharp = null;
+}
+
+async function saveOptimizedPhoto(buf, filename) {
+  const targetPath = path.join(PHOTOS_DIR, filename);
+  if (!sharp) {
+    fs.writeFileSync(targetPath, buf);
+    return;
+  }
+  try {
+    const ext = path.extname(filename).toLowerCase();
+    const meta = await sharp(buf).metadata();
+    const pipeline = sharp(buf);
+    if (meta.width > 1400 || meta.height > 1400) {
+      pipeline.resize(1400, 1400, { fit: 'inside', withoutEnlargement: true });
+    }
+    if (ext === '.jpg' || ext === '.jpeg') {
+      if (meta.hasAlpha) pipeline.flatten({ background: '#ffffff' });
+      await pipeline.jpeg({ quality: 82, mozjpeg: true, progressive: true }).toFile(targetPath);
+    } else if (ext === '.png') {
+      await pipeline.png({ quality: 85, compressionLevel: 9, effort: 7, palette: true }).toFile(targetPath);
+    } else {
+      fs.writeFileSync(targetPath, buf);
+    }
+  } catch (err) {
+    console.warn('[SHARP] Lỗi nén ảnh, lưu file gốc:', err.message);
+    fs.writeFileSync(targetPath, buf);
+  }
+}
+
 // ─── QUẢN LÝ PHIÊN DUY NHẤT (SINGLE ACTIVE SESSION) ───
 const SESSION_FILE = path.join(__dirname, '.session_state.json');
 let currentSession = null;
@@ -194,7 +228,7 @@ const server = http.createServer((req, res) => {
   if (req.method === 'POST' && pathname === '/api/upload-photo') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
-    req.on('end', () => {
+    req.on('end', async () => {
       try {
         const data = JSON.parse(body);
         let filename = data.name ? path.basename(data.name).replace(/[^a-zA-Z0-9_\-\.]/g, '_') : '';
@@ -238,7 +272,7 @@ const server = http.createServer((req, res) => {
             }).on('error', onDone);
           };
 
-          const handleDone = (err, buf, ctype) => {
+          const handleDone = async (err, buf, ctype) => {
             if (err) {
               res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
               res.end(JSON.stringify({ error: err.message }));
@@ -249,8 +283,7 @@ const server = http.createServer((req, res) => {
               res.end(JSON.stringify({ error: 'Nội dung tải về không phải là file ảnh (Content-Type: ' + ctype + ')' }));
               return;
             }
-            const targetPath = path.join(PHOTOS_DIR, filename);
-            fs.writeFileSync(targetPath, buf);
+            await saveOptimizedPhoto(buf, filename);
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ success: true, file: filename, url: 'assets/photos/' + filename }));
           };
@@ -295,8 +328,7 @@ const server = http.createServer((req, res) => {
         if (data.dataBase64) {
           const base64Data = data.dataBase64.replace(/^data:image\/\w+;base64,/, '');
           const buffer = Buffer.from(base64Data, 'base64');
-          const targetPath = path.join(PHOTOS_DIR, filename);
-          fs.writeFileSync(targetPath, buffer);
+          await saveOptimizedPhoto(buffer, filename);
 
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           res.end(JSON.stringify({ success: true, file: filename, url: 'assets/photos/' + filename }));
@@ -339,11 +371,29 @@ const server = http.createServer((req, res) => {
 
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+    const mtime = stats.mtime.toUTCString();
+    const etag = `W/"${stats.size}-${stats.mtime.getTime()}"`;
 
-    res.writeHead(200, {
-      'Content-Type': contentType
-    });
+    // 304 Not Modified support
+    if (req.headers['if-none-match'] === etag || req.headers['if-modified-since'] === mtime) {
+      res.writeHead(304);
+      res.end();
+      return;
+    }
 
+    const headers = {
+      'Content-Type': contentType,
+      'Last-Modified': mtime,
+      'ETag': etag
+    };
+
+    if (reqPath.startsWith('/assets/') || /\.(jpg|jpeg|png|webp|svg|css|js|woff2?)$/i.test(reqPath)) {
+      headers['Cache-Control'] = 'public, max-age=86400, stale-while-revalidate=604800';
+    } else {
+      headers['Cache-Control'] = 'no-cache';
+    }
+
+    res.writeHead(200, headers);
     fs.createReadStream(filePath).pipe(res);
   });
 });
